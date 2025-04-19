@@ -4,8 +4,6 @@ import { BaseResponseTypeDTO } from 'src/utils';
 import { User } from './entities/user.entity';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { Token } from 'src/token/schema/token.schema';
-import { TokenService } from 'src/token/token.service';
 
 @Injectable()
 export class UsersService {
