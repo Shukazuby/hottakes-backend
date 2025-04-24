@@ -771,7 +771,7 @@ export class HottakesService {
 
   generateTakeUrl(id: string): string {
     const baseUrl = process.env.APP_BASE_URL;
-    return `${baseUrl}/profile/${encodeURIComponent(id.toLowerCase())}`;
+    return `${baseUrl}/${encodeURIComponent(id.toLowerCase())}`;
   }
 }
 
