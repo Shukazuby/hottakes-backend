@@ -11,6 +11,10 @@ content: string;
 @IsNotEmpty()
 category: string;
 
+@ApiProperty({example: 'app_user'})
+@IsNotEmpty()
+sender?: string;
+
 @ApiProperty({example: 'hotgirl_summer'})
 @IsNotEmpty()
 to: string;

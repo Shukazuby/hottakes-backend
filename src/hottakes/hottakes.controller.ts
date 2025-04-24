@@ -96,9 +96,10 @@ export class HottakesController {
   })
   async reactToHotTake(
     @Param('id') id: string,
+    @Query('username') username: string,
     @Query('reactions') reactions?: REACTIONS,
   ): Promise<BaseResponseTypeDTO> {
-    const result = await this.hottakesService.reactToHotTake(id, reactions);
+    const result = await this.hottakesService.reactToHotTake(id, reactions, username );
     return result;
   }
 
@@ -116,9 +117,45 @@ export class HottakesController {
     description: 'Filters (optional)',
   })
   async getAllTakes(
+    @Query('username') username: string,
     @Query('filter') filter?: FILTERS,
   ): Promise<BaseResponseTypeDTO> {
-    const result = await this.hottakesService.getAllTakes(filter);
+    const result = await this.hottakesService.getAllTakes(username, filter);
+    return result;
+  }
+
+  @Get('get/previous-takes')
+  @ApiOperation({ summary: 'Previous Hot Takes' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Previous Hot Takes fetched ',
+  })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid input' })
+  @ApiQuery({
+    name: 'filter',
+    required: false,
+    enum: FILTERS,
+    description: 'Filters (optional)',
+  })
+  async getPreviousTakes(
+    @Query('username') username: string,
+    @Query('filter') filter?: FILTERS,
+  ): Promise<BaseResponseTypeDTO> {
+    const result = await this.hottakesService.getPreviousTakes(username, filter);
+    return result;
+  }
+
+  @Get('sent/to/user/count')
+  @ApiOperation({ summary: 'Count Of Takes Sent to a user' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Total count of takes to user fetched ',
+  })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid input' })
+  async getTakesForUserCount(
+    @Query('username') username: string,
+  ): Promise<BaseResponseTypeDTO> {
+    const result = await this.hottakesService.getTakesForUserCount(username);
     return result;
   }
 

@@ -24,6 +24,13 @@ export enum FILTERS {
   CONTROVERSIAL = 'controversial',
 }
 
+export class REACTIONSOBJ {
+  @Prop()
+  username: string;
+  @Prop()
+  reaction: string;
+}
+
 @Schema({ timestamps: true })
 export class HotTake {
   @Prop({ required: true })
@@ -54,7 +61,19 @@ export class HotTake {
   sender?: string;
 
   @Prop()
-  recipientUsername?: string; 
+  reactedUsers?: REACTIONSOBJ[];
+
+  @Prop()
+  recipientUsername?: string;
+
+  @Prop()
+  takeUrl?: string;
+
+  @Prop()
+  whatsappShareUrl?: string;
+
+  @Prop()
+  twitterShareUrl?: string;
 }
 
 export type HotTakeDocument = HotTake & Document;
