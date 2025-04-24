@@ -21,7 +21,7 @@ export class HottakesController {
   constructor(private readonly hottakesService: HottakesService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Add Hot Take' })
+  @ApiOperation({ summary: 'Send Hot Take - (both guest & existing users)' })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Hot Take Added' })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
@@ -35,8 +35,14 @@ export class HottakesController {
   }
 
   @Post('user/post')
-  @ApiOperation({ summary: 'User Post a Hot Take' })
-  @ApiResponse({ status: HttpStatus.CREATED, description: 'User Posted a Hot Take' })
+  @ApiOperation({
+    summary:
+      'Existing/in-app User Post a Hot Take to get reactions - (existing user)',
+  })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'User Posted a Hot Take',
+  })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description: 'Invalid input data',
@@ -49,7 +55,10 @@ export class HottakesController {
   }
 
   @Get('user/:username')
-  @ApiOperation({ summary: 'Fetch all Hot Takes by username' })
+  @ApiOperation({
+    summary:
+      'Fetch all Hot Takes by username - (Existing/in-app user fetch all hottakes sent to them - username is required)',
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Hot Takes fetched ',
@@ -73,7 +82,7 @@ export class HottakesController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Fetch a hot take' })
+  @ApiOperation({ summary: 'Fetch a hot take by hottake Id' })
   @ApiResponse({ status: HttpStatus.OK, description: 'hot take fetched' })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
@@ -85,7 +94,7 @@ export class HottakesController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'React to takes' })
+  @ApiOperation({ summary: 'React to a take by the hottake Id - (Only in-app user can react. Username is required)' })
   @ApiResponse({ status: HttpStatus.OK, description: 'React to takes' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid input' })
   @ApiQuery({
@@ -99,12 +108,19 @@ export class HottakesController {
     @Query('username') username: string,
     @Query('reactions') reactions?: REACTIONS,
   ): Promise<BaseResponseTypeDTO> {
-    const result = await this.hottakesService.reactToHotTake(id, reactions, username );
+    const result = await this.hottakesService.reactToHotTake(
+      id,
+      reactions,
+      username,
+    );
     return result;
   }
 
   @Get()
-  @ApiOperation({ summary: 'Fetch all Hot Takes' })
+  @ApiOperation({
+    summary:
+      'Fetch all Hot Takes (only in-app users can do this - username is required)',
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Hot Takes fetched ',
@@ -125,7 +141,7 @@ export class HottakesController {
   }
 
   @Get('get/previous-takes')
-  @ApiOperation({ summary: 'Previous Hot Takes' })
+  @ApiOperation({ summary: "Existing/in-app users get their Previous HotTakes(i.e only the ones they reacted to)" })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Previous Hot Takes fetched ',
@@ -141,12 +157,15 @@ export class HottakesController {
     @Query('username') username: string,
     @Query('filter') filter?: FILTERS,
   ): Promise<BaseResponseTypeDTO> {
-    const result = await this.hottakesService.getPreviousTakes(username, filter);
+    const result = await this.hottakesService.getPreviousTakes(
+      username,
+      filter,
+    );
     return result;
   }
 
   @Get('sent/to/user/count')
-  @ApiOperation({ summary: 'Count Of Takes Sent to a user' })
+  @ApiOperation({ summary: 'Count Of Takes Sent to a user(Number of hottakes in-app users recieved)' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Total count of takes to user fetched ',
@@ -160,7 +179,7 @@ export class HottakesController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a hot take' })
+  @ApiOperation({ summary: " Delete a hottake by hottake Id" })
   @ApiResponse({ status: HttpStatus.OK, description: 'hot take Deleted' })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
