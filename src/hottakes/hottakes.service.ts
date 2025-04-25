@@ -304,8 +304,9 @@ export class HottakesService {
 
     // Filter out takes that the user has already reacted to
     hottakes = hottakes.filter((hotTake) => {
+      const recipientUsername = hotTake.recipientUsername?.toLowerCase();
       const alreadyReacted = hotTake.reactedUsers?.some(
-        (userReaction) => userReaction.username.toLowerCase() === username,
+        (userReaction) => userReaction.username.toLowerCase() === recipientUsername,
       );
       return !alreadyReacted; // Only include takes where the user has not reacted
     });
