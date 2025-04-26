@@ -347,7 +347,7 @@ export class HottakesService {
     reaction: string,
     username: string,
   ): Promise<BaseResponseTypeDTO> {
-    const validReactions = ['hot', 'spicy', 'trash', 'mid', 'cold'];
+    const validReactions = ['hot', 'spicy', 'trash', 'mid', 'cold', 'valid'];
     username = username.toLowerCase();
   
     if (!validReactions.includes(reaction)) {
