@@ -11,8 +11,14 @@ import {
 } from '@nestjs/common';
 import { HottakesService } from './hottakes.service';
 import { CreateHottakeDto, PostHottakeDto } from './dto/create-hottake.dto';
-import { BaseResponseTypeDTO } from 'src/utils';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { BaseResponseTypeDTO, PaginationFilterDTO } from 'src/utils';
+import {
+  ApiExtraModels,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { FILTERS, REACTIONS } from './entities/hottake.entity';
 
 @ApiTags('Hottakes')
@@ -75,9 +81,10 @@ export class HottakesController {
   })
   async findAllByUser(
     @Param('username') username: string,
+    @Query() pagination?: PaginationFilterDTO,
     @Query('filter') filter?: FILTERS,
   ) {
-    const result = await this.hottakesService.getTakesForUser(username, filter);
+    const result = await this.hottakesService.getTakesForUser(username, pagination, filter);
     return result;
   }
 
@@ -92,9 +99,12 @@ export class HottakesController {
     const result = await this.hottakesService.getSingleTake(id);
     return result;
   }
-
+  
   @Patch(':id')
-  @ApiOperation({ summary: 'React to a take by the hottake Id - (Only in-app user can react. Username is required)' })
+  @ApiOperation({
+    summary:
+      'React to a take by the hottake Id - (Only in-app user can react. Username is required)',
+  })
   @ApiResponse({ status: HttpStatus.OK, description: 'React to takes' })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid input' })
   @ApiQuery({
@@ -116,6 +126,7 @@ export class HottakesController {
     return result;
   }
 
+
   @Get()
   @ApiOperation({
     summary:
@@ -134,14 +145,22 @@ export class HottakesController {
   })
   async getAllTakes(
     @Query('username') username: string,
+    @Query() pagination?: PaginationFilterDTO,
     @Query('filter') filter?: FILTERS,
   ): Promise<BaseResponseTypeDTO> {
-    const result = await this.hottakesService.getAllTakes(username, filter);
+    const result = await this.hottakesService.getAllTakes(
+      username,
+      pagination,
+      filter,
+    );
     return result;
   }
 
   @Get('get/previous-takes')
-  @ApiOperation({ summary: "Existing/in-app users get their Previous HotTakes(i.e only the ones they reacted to)" })
+  @ApiOperation({
+    summary:
+      'Existing/in-app users get their Previous HotTakes(i.e only the ones they reacted to)',
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Previous Hot Takes fetched ',
@@ -165,7 +184,10 @@ export class HottakesController {
   }
 
   @Get('sent/to/user/count')
-  @ApiOperation({ summary: 'Count Of Takes Sent to a user(Number of hottakes in-app users recieved)' })
+  @ApiOperation({
+    summary:
+      'Count Of Takes Sent to a user(Number of hottakes in-app users recieved)',
+  })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Total count of takes to user fetched ',
@@ -179,7 +201,7 @@ export class HottakesController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: " Delete a hottake by hottake Id" })
+  @ApiOperation({ summary: ' Delete a hottake by hottake Id' })
   @ApiResponse({ status: HttpStatus.OK, description: 'hot take Deleted' })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,

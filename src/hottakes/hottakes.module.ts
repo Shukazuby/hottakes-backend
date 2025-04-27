@@ -1,5 +1,5 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { HottakesService } from './hottakes.service';
+import { CronWork, HottakesService } from './hottakes.service';
 import { HottakesController } from './hottakes.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { HotTake, HotTakeSchema } from './entities/hottake.entity';
@@ -15,7 +15,7 @@ import { UsersModule } from 'src/users/users.module';
   ],
 
   controllers: [HottakesController],
-  providers: [HottakesService],
-  exports: [HottakesService],
+  providers: [HottakesService, CronWork],
+  exports: [HottakesService, CronWork],
 })
 export class HottakesModule {}

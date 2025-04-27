@@ -70,11 +70,9 @@ export class HotTake {
   @Prop()
   takeUrl?: string;
 
-  @Prop()
-  whatsappShareUrl?: string;
+  @Prop({default: true})
+  isPublic?: boolean;
 
-  @Prop()
-  twitterShareUrl?: string;
 }
 
 export type HotTakeDocument = HotTake & Document;
