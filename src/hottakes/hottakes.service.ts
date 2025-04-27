@@ -90,9 +90,10 @@ export class HottakesService {
     const user = await this.userModel.findOne({ username });
     if (!user) throw new NotFoundException(`User not found.`);
 
-    const { page = 1, limit = 10 } = pagination;
+    const page = Number(pagination?.page) || 1;
+    const limit = Number(pagination?.limit) || 50;
     const skip = (page - 1) * limit;
-
+    
     let hottakes: any[];
     const matchUserTakes = {
       recipientUsername: username,
@@ -315,9 +316,10 @@ export class HottakesService {
     const user = await this.userModel.findOne({ username });
     if (!user) throw new NotFoundException(`User not found.`);
 
-    const { page, limit } = pagination;
+    const page = Number(pagination?.page) || 1;
+    const limit = Number(pagination?.limit) || 50;
     const skip = (page - 1) * limit;
-
+    
     switch (filter) {
       case 'trending':
         // Trending = Top 5 takes with highest total reactions
@@ -811,7 +813,7 @@ export class CronWork {
     //   //   await this.hotTakeModel.deleteMany({ _id: { $in: idsToDelete } });
     //   //   console.log(`Deleted ${idsToDelete.length} hottakes.`);
     //   // }
-    
+
     // await this.hottakeSrv.createManyHottakes(hottakes);
     //   console.log('created hottakes...');
     // });
