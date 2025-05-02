@@ -228,8 +228,9 @@ export class HottakesController {
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid input' })
   async getMyTakes(
     @Query('username') username: string,
+    @Query() pagination?: PaginationFilterDTO,
   ): Promise<BaseResponseTypeDTO> {
-    const result = await this.hottakesService.getMyTakes(username);
+    const result = await this.hottakesService.getMyTakes(username, pagination);
     return result;
   }
 
