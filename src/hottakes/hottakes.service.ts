@@ -93,7 +93,7 @@ export class HottakesService {
     const page = Number(pagination?.page) || 1;
     const limit = Number(pagination?.limit) || 50;
     const skip = (page - 1) * limit;
-    
+
     let hottakes: any[];
     const matchUserTakes = {
       recipientUsername: username,
@@ -189,121 +189,6 @@ export class HottakesService {
       message: hottakes.length ? 'Hot Takes Fetched' : 'No Hot Takes',
     };
   }
-  // async getTakesForUser(
-  //   username: string,
-  //   filter?: FILTERS,
-  // ): Promise<BaseResponseTypeDTO> {
-  //   username = username.toLocaleLowerCase();
-  //   const user = await this.userModel.findOne({ username });
-  //   if (!user) throw new NotFoundException(`User not found.`);
-
-  //   let hottakes: any[];
-
-  //   const matchUserTakes = {
-  //     $or: [{ recipientUsername: username }, { sender: username }],
-  //   };
-
-  //   switch (filter) {
-  //     case 'trending':
-  //       // Trending: Top 5 user-related takes with highest total reactions
-  //       hottakes = await this.hotTakeModel.aggregate([
-  //         { $match: matchUserTakes },
-  //         {
-  //           $addFields: {
-  //             totalReactions: {
-  //               $add: [
-  //                 { $ifNull: ['$hot', 0] },
-  //                 { $ifNull: ['$spicy', 0] },
-  //                 { $ifNull: ['$trash', 0] },
-  //                 { $ifNull: ['$mid', 0] },
-  //                 { $ifNull: ['$cold', 0] },
-  //               ],
-  //             },
-  //           },
-  //         },
-  //         { $sort: { totalReactions: -1 } },
-  //         { $limit: 5 },
-  //       ]);
-  //       break;
-
-  //     case 'controversial':
-  //       // Controversial: Top 5 most recent takes with mixed reactions (hot, trash, cold)
-  //       hottakes = await this.hotTakeModel.aggregate([
-  //         { $match: matchUserTakes },
-  //         {
-  //           $addFields: {
-  //             hot: { $ifNull: ['$hot', 0] },
-  //             spicy: { $ifNull: ['$spicy', 0] },
-  //             trash: { $ifNull: ['$trash', 0] },
-  //             cold: { $ifNull: ['$cold', 0] },
-  //             mid: { $ifNull: ['$mid', 0] },
-  //           },
-  //         },
-  //         {
-  //           $addFields: {
-  //             positive: { $add: ['$hot', '$spicy'] },
-  //             negative: { $add: ['$trash', '$cold'] },
-  //             totalReactions: {
-  //               $add: ['$hot', '$spicy', '$trash', '$cold', '$mid'],
-  //             },
-  //           },
-  //         },
-  //         {
-  //           $match: {
-  //             totalReactions: { $gte: 10 }, // Optional engagement threshold
-  //           },
-  //         },
-  //         {
-  //           $addFields: {
-  //             polarityScore: {
-  //               $abs: {
-  //                 $divide: [
-  //                   { $subtract: ['$positive', '$negative'] },
-  //                   '$totalReactions',
-  //                 ],
-  //               },
-  //             },
-  //           },
-  //         },
-  //         { $sort: { polarityScore: 1, createdAt: -1 } },
-  //         { $limit: 5 },
-  //       ]);
-  //       break;
-
-  //     case 'newest':
-  //       // Newest: Latest 20 takes involving the user
-  //       hottakes = await this.hotTakeModel
-  //         .find(matchUserTakes)
-  //         .sort({ createdAt: -1 })
-  //         .limit(20)
-  //         .exec();
-  //       break;
-
-  //     default:
-  //       // No filter: Return all takes involving the user, sorted by newest
-  //       hottakes = await this.hotTakeModel
-  //         .find(matchUserTakes)
-  //         .sort({ createdAt: -1 })
-  //         .exec();
-  //       break;
-  //   }
-
-  //   // Remove takes where the user has already reacted
-  //   hottakes = hottakes.filter((hotTake) => {
-  //     const reactedUser = hotTake.reactedUsers.find(
-  //       (userReaction) => userReaction.username === username,
-  //     );
-  //     return !reactedUser; // Only include takes where the user has not reacted
-  //   });
-
-  //   return {
-  //     totalCount: hottakes.length,
-  //     data: hottakes,
-  //     success: true,
-  //     code: HttpStatus.OK,
-  //     message: hottakes.length ? 'Hot Takes Fetched' : 'No Hot Takes',
-  //   };
-  // }
 
   async getAllTakes(
     username: string,
@@ -319,7 +204,7 @@ export class HottakesService {
     const page = Number(pagination?.page) || 1;
     const limit = Number(pagination?.limit) || 50;
     const skip = (page - 1) * limit;
-    
+
     switch (filter) {
       case 'trending':
         // Trending = Top 5 takes with highest total reactions
@@ -337,15 +222,14 @@ export class HottakesService {
               },
             },
           },
-          { $match: { isPublic: true } }, // Only fetch public takes
+          { $match: { isPublic: true } },
           { $sort: { totalReactions: -1 } },
-          { $skip: skip }, // Skip the number of items based on the page
-          { $limit: limit }, // Limit the number of items based on the page size
+          { $skip: skip },
+          { $limit: limit },
         ]);
         break;
 
       case 'controversial':
-        // Controversial = Most recent 5 takes with high polarity (mix of hot/trash/cold)
         hottakes = await this.hotTakeModel.aggregate([
           {
             $addFields: {
@@ -367,8 +251,8 @@ export class HottakesService {
           },
           {
             $match: {
-              totalReactions: { $gte: 10 }, // Optional threshold to ensure enough engagement
-              isPublic: true, // Only fetch public takes
+              totalReactions: { $gte: 10 },
+              isPublic: true,
             },
           },
           {
@@ -383,34 +267,31 @@ export class HottakesService {
               },
             },
           },
-          { $sort: { polarityScore: 1, createdAt: -1 } }, // Lower score = more balanced = more controversial
-          { $skip: skip }, // Skip the number of items based on the page
-          { $limit: limit }, // Limit the number of items based on the page size
+          { $sort: { polarityScore: 1, createdAt: -1 } },
+          { $skip: skip },
+          { $limit: limit },
         ]);
         break;
 
       case 'newest':
-        // Newest = Latest 20 takes
         hottakes = await this.hotTakeModel
-          .find({ isPublic: true }) // Only fetch public takes
+          .find({ isPublic: true })
           .sort({ createdAt: -1 })
-          .skip(skip) // Skip the number of items based on the page
-          .limit(limit) // Limit the number of items based on the page size
+          .skip(skip)
+          .limit(limit)
           .exec();
         break;
 
       default:
-        // Return all takes sorted by createdAt by default
         hottakes = await this.hotTakeModel
-          .find({ isPublic: true }) // Only fetch public takes
+          .find({ isPublic: true })
           .sort({ createdAt: -1 })
-          .skip(skip) // Skip the number of items based on the page
-          .limit(limit) // Limit the number of items based on the page size
+          .skip(skip)
+          .limit(limit)
           .exec();
         break;
     }
 
-    // Filter out takes that the recipientUser has already reacted to
     hottakes = hottakes.filter((hotTake) => {
       const recipientUsername = hotTake.recipientUsername?.toLowerCase();
 
@@ -419,10 +300,10 @@ export class HottakesService {
           (userReaction) =>
             userReaction.username.toLowerCase() === recipientUsername,
         );
-        return !alreadyReacted; // Only include takes where the recipient hasn't reacted
+        return !alreadyReacted;
       }
 
-      return true; // Include hot take if the username is not the same as the recipientUsername
+      return true;
     });
 
     return {
@@ -650,23 +531,157 @@ export class HottakesService {
     };
   }
 
+  // async getPreviousTakes(
+  //   username: string,
+  //   filter?: FILTERS,
+  //   pagination?: PaginationFilterDTO,
+  // ): Promise<BaseResponseTypeDTO> {
+  //   const page = Number(pagination?.page) || 1;
+  //   const limit = Number(pagination?.limit) || 50;
+  //   const skip = (page - 1) * limit;
+
+  //   let hottakes: HotTake[];
+
+  //   // Convert the username to lowercase to ensure case-insensitive comparison
+  //   username = username.toLowerCase();
+  //   const user = await this.userModel.findOne({ username });
+  //   if (!user) {
+  //     throw new NotFoundException(`User not found.`);
+  //   }
+
+  //   switch (filter) {
+  //     case 'trending':
+  //       // Trending = Top 5 takes with highest total reactions
+  //       hottakes = await this.hotTakeModel.aggregate([
+  //         {
+  //           $addFields: {
+  //             totalReactions: {
+  //               $add: [
+  //                 { $ifNull: ['$hot', 0] },
+  //                 { $ifNull: ['$spicy', 0] },
+  //                 { $ifNull: ['$trash', 0] },
+  //                 { $ifNull: ['$mid', 0] },
+  //                 { $ifNull: ['$cold', 0] },
+  //               ],
+  //             },
+  //           },
+  //         },
+  //         { $sort: { totalReactions: -1 } },
+  //         { $skip: skip },
+  //         { $limit: limit },
+  //       ]);
+  //       break;
+
+  //     case 'controversial':
+  //       // Controversial = Most recent 5 takes with high polarity (mix of hot/trash/cold)
+  //       hottakes = await this.hotTakeModel.aggregate([
+  //         {
+  //           $addFields: {
+  //             hot: { $ifNull: ['$hot', 0] },
+  //             spicy: { $ifNull: ['$spicy', 0] },
+  //             trash: { $ifNull: ['$trash', 0] },
+  //             cold: { $ifNull: ['$cold', 0] },
+  //             mid: { $ifNull: ['$mid', 0] },
+  //           },
+  //         },
+  //         {
+  //           $addFields: {
+  //             positive: { $add: ['$hot', '$spicy'] },
+  //             negative: { $add: ['$trash', '$cold'] },
+  //             totalReactions: {
+  //               $add: ['$hot', '$spicy', '$trash', '$cold', '$mid'],
+  //             },
+  //           },
+  //         },
+  //         {
+  //           $match: {
+  //             totalReactions: { $gte: 10 }, // Optional threshold to ensure enough engagement
+  //           },
+  //         },
+  //         {
+  //           $addFields: {
+  //             polarityScore: {
+  //               $abs: {
+  //                 $divide: [
+  //                   { $subtract: ['$positive', '$negative'] },
+  //                   '$totalReactions',
+  //                 ],
+  //               },
+  //             },
+  //           },
+  //         },
+  //         { $sort: { polarityScore: 1, createdAt: -1 } },
+  //         { $skip: skip },
+  //         { $limit: limit },
+  //       ]);
+  //       break;
+
+  //     case 'newest':
+  //       // Newest = Latest 20 takes
+  //       hottakes = await this.hotTakeModel
+  //         .find()
+  //         .sort({ createdAt: -1 })
+  //         .limit(20)
+  //         .exec();
+  //       break;
+
+  //     default:
+  //       // Return all takes sorted by createdAt by default
+  //       hottakes = await this.hotTakeModel
+  //         .find()
+  //         .sort({ createdAt: -1 })
+  //         .skip(skip)
+  //         .limit(limit)
+
+  //         .exec();
+  //       break;
+  //   }
+
+  //   // Filter to only include takes where the user has already reacted
+  //   hottakes = hottakes.filter((hotTake) => {
+  //     return hotTake.reactedUsers?.some(
+  //       (userReaction) => userReaction.username.toLowerCase() === username,
+  //     );
+  //   });
+
+  //   return {
+  //     totalCount: hottakes.length,
+  //     data: hottakes,
+  //     success: true,
+  //     code: HttpStatus.OK,
+  //     message: hottakes.length ? 'Hot Takes Found' : 'No Hot Takes Available',
+  //   };
+  // }
+
   async getPreviousTakes(
     username: string,
     filter?: FILTERS,
+    pagination?: PaginationFilterDTO,
   ): Promise<BaseResponseTypeDTO> {
-    let hottakes: HotTake[];
+    const page = Number(pagination?.page) || 1;
+    const limit = Number(pagination?.limit) || 50;
+    const skip = (page - 1) * limit;
 
-    // Convert the username to lowercase to ensure case-insensitive comparison
     username = username.toLowerCase();
     const user = await this.userModel.findOne({ username });
     if (!user) {
       throw new NotFoundException(`User not found.`);
     }
 
+    let hottakes: HotTake[];
+
+    const baseMatchStage = {
+      reactedUsers: {
+        $elemMatch: {
+          username: username,
+        },
+      },
+    };
+
     switch (filter) {
       case 'trending':
-        // Trending = Top 5 takes with highest total reactions
         hottakes = await this.hotTakeModel.aggregate([
+          { $match: baseMatchStage },
           {
             $addFields: {
               totalReactions: {
@@ -681,13 +696,14 @@ export class HottakesService {
             },
           },
           { $sort: { totalReactions: -1 } },
-          { $limit: 5 },
+          { $skip: skip },
+          { $limit: limit },
         ]);
         break;
 
       case 'controversial':
-        // Controversial = Most recent 5 takes with high polarity (mix of hot/trash/cold)
         hottakes = await this.hotTakeModel.aggregate([
+          { $match: baseMatchStage },
           {
             $addFields: {
               hot: { $ifNull: ['$hot', 0] },
@@ -706,11 +722,7 @@ export class HottakesService {
               },
             },
           },
-          {
-            $match: {
-              totalReactions: { $gte: 10 }, // Optional threshold to ensure enough engagement
-            },
-          },
+          { $match: { totalReactions: { $gte: 10 } } },
           {
             $addFields: {
               polarityScore: {
@@ -723,35 +735,34 @@ export class HottakesService {
               },
             },
           },
-          { $sort: { polarityScore: 1, createdAt: -1 } }, // Lower score = more balanced = more controversial
-          { $limit: 5 },
+          { $sort: { polarityScore: 1, createdAt: -1 } },
+          { $skip: skip },
+          { $limit: limit },
         ]);
         break;
 
       case 'newest':
-        // Newest = Latest 20 takes
         hottakes = await this.hotTakeModel
-          .find()
+          .find({
+            'reactedUsers.username': username,
+          })
           .sort({ createdAt: -1 })
-          .limit(20)
+          .skip(skip)
+          .limit(limit)
           .exec();
         break;
 
       default:
-        // Return all takes sorted by createdAt by default
         hottakes = await this.hotTakeModel
-          .find()
+          .find({
+            'reactedUsers.username': username,
+          })
           .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(limit)
           .exec();
         break;
     }
-
-    // Filter to only include takes where the user has already reacted
-    hottakes = hottakes.filter((hotTake) => {
-      return hotTake.reactedUsers?.some(
-        (userReaction) => userReaction.username.toLowerCase() === username,
-      );
-    });
 
     return {
       totalCount: hottakes.length,
@@ -782,6 +793,147 @@ export class HottakesService {
       throw error;
     }
   }
+
+  async getMyTakes(
+    username: string,
+    pagination?: PaginationFilterDTO,
+    filter?: FILTERS,
+  ): Promise<BaseResponseTypeDTO> {
+    username = username.toLocaleLowerCase();
+    const user = await this.userModel.findOne({ username });
+    if (!user) throw new NotFoundException(`User not found.`);
+
+    const page = Number(pagination?.page) || 1;
+    const limit = Number(pagination?.limit) || 50;
+    const skip = (page - 1) * limit;
+
+    let hottakes: any[];
+    const matchUserTakes = {
+      sender: username,
+    };
+
+    switch (filter) {
+      case 'trending':
+        hottakes = await this.hotTakeModel.aggregate([
+          { $match: matchUserTakes },
+          {
+            $addFields: {
+              totalReactions: {
+                $add: [
+                  { $ifNull: ['$hot', 0] },
+                  { $ifNull: ['$spicy', 0] },
+                  { $ifNull: ['$trash', 0] },
+                  { $ifNull: ['$mid', 0] },
+                  { $ifNull: ['$cold', 0] },
+                ],
+              },
+            },
+          },
+          { $sort: { totalReactions: -1 } },
+          { $skip: skip },
+          { $limit: limit },
+        ]);
+        break;
+
+      case 'controversial':
+        hottakes = await this.hotTakeModel.aggregate([
+          { $match: matchUserTakes },
+          {
+            $addFields: {
+              hot: { $ifNull: ['$hot', 0] },
+              spicy: { $ifNull: ['$spicy', 0] },
+              trash: { $ifNull: ['$trash', 0] },
+              cold: { $ifNull: ['$cold', 0] },
+              mid: { $ifNull: ['$mid', 0] },
+            },
+          },
+          {
+            $addFields: {
+              positive: { $add: ['$hot', '$spicy'] },
+              negative: { $add: ['$trash', '$cold'] },
+              totalReactions: {
+                $add: ['$hot', '$spicy', '$trash', '$cold', '$mid'],
+              },
+            },
+          },
+          { $match: { totalReactions: { $gte: 10 } } },
+          {
+            $addFields: {
+              polarityScore: {
+                $abs: {
+                  $divide: [
+                    { $subtract: ['$positive', '$negative'] },
+                    '$totalReactions',
+                  ],
+                },
+              },
+            },
+          },
+          { $sort: { polarityScore: 1, createdAt: -1 } },
+          { $skip: skip },
+          { $limit: limit },
+        ]);
+        break;
+
+      case 'newest':
+      default:
+        hottakes = await this.hotTakeModel
+          .find(matchUserTakes)
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(limit)
+          .exec();
+        break;
+    }
+
+    return {
+      totalCount: hottakes.length,
+      data: hottakes,
+      success: true,
+      code: HttpStatus.OK,
+      message: hottakes.length ? 'Hot Takes Fetched' : 'No Hot Takes',
+    };
+  }
+
+  async getTakesStats(username: string): Promise<BaseResponseTypeDTO> {
+    username = username.toLocaleLowerCase();
+    const user = await this.userModel.findOne({ username });
+    if (!user) throw new NotFoundException(`User not found.`);
+
+    const allTakes = await this.hotTakeModel.find({});
+
+    const takesReceived = allTakes.filter(
+      (take) => take.recipientUsername?.toLowerCase() === username,
+    );
+
+    const takesPosted = allTakes.filter(
+      (take) => take.sender?.toLowerCase() === username,
+    );
+
+    let totalReactions = 0;
+    for (const take of takesPosted) {
+      const {
+        cold = 0,
+        trash = 0,
+        mid = 0,
+        valid = 0,
+        spicy = 0,
+        hot = 0,
+      } = take;
+      totalReactions += cold + trash + mid + valid + spicy + hot;
+    }
+
+    return {
+      data: {
+        takesReceived: takesReceived.length,
+        takesPosted: takesPosted.length,
+        totalReactions: totalReactions,
+      },
+      success: true,
+      code: HttpStatus.OK,
+      message: '',
+    };
+  }
 }
 
 @Injectable()
@@ -804,7 +956,6 @@ export class CronWork {
     //     to: faker.person.lastName().toLocaleLowerCase(),
     //     isPublic: true,
     //   }));
-
     //   //   const hottakesToDelete = await this.hotTakeModel.find()
     //   //   .sort({ createdAt: -1 })
     //   //   .limit(1000);
@@ -813,7 +964,6 @@ export class CronWork {
     //   //   await this.hotTakeModel.deleteMany({ _id: { $in: idsToDelete } });
     //   //   console.log(`Deleted ${idsToDelete.length} hottakes.`);
     //   // }
-
     // await this.hottakeSrv.createManyHottakes(hottakes);
     //   console.log('created hottakes...');
     // });

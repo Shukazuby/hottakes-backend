@@ -84,7 +84,11 @@ export class HottakesController {
     @Query() pagination?: PaginationFilterDTO,
     @Query('filter') filter?: FILTERS,
   ) {
-    const result = await this.hottakesService.getTakesForUser(username, pagination, filter);
+    const result = await this.hottakesService.getTakesForUser(
+      username,
+      pagination,
+      filter,
+    );
     return result;
   }
 
@@ -99,7 +103,7 @@ export class HottakesController {
     const result = await this.hottakesService.getSingleTake(id);
     return result;
   }
-  
+
   @Patch(':id')
   @ApiOperation({
     summary:
@@ -125,7 +129,6 @@ export class HottakesController {
     );
     return result;
   }
-
 
   @Get()
   @ApiOperation({
@@ -175,10 +178,12 @@ export class HottakesController {
   async getPreviousTakes(
     @Query('username') username: string,
     @Query('filter') filter?: FILTERS,
+    @Query() pagination?: PaginationFilterDTO,
   ): Promise<BaseResponseTypeDTO> {
     const result = await this.hottakesService.getPreviousTakes(
       username,
       filter,
+      pagination,
     );
     return result;
   }
@@ -209,6 +214,38 @@ export class HottakesController {
   })
   async deleteTake(@Param('id') id: string) {
     const result = await this.hottakesService.deleteTake(id);
+    return result;
+  }
+
+  @Get('my-posted/takes')
+  @ApiOperation({
+    summary: 'User fetch all their posted takes',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'User fetch all their posted takes ',
+  })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid input' })
+  async getMyTakes(
+    @Query('username') username: string,
+  ): Promise<BaseResponseTypeDTO> {
+    const result = await this.hottakesService.getMyTakes(username);
+    return result;
+  }
+
+  @Get('stats/by/username')
+  @ApiOperation({
+    summary: 'User see their hottakes statistics',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'User see their hottakes statistics',
+  })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid input' })
+  async getTakesStats(
+    @Query('username') username: string,
+  ): Promise<BaseResponseTypeDTO> {
+    const result = await this.hottakesService.getTakesStats(username);
     return result;
   }
 }

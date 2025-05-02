@@ -53,6 +53,9 @@ export class HotTake {
   mid: number;
 
   @Prop({ default: 0 })
+  valid: number;
+
+  @Prop({ default: 0 })
   cold: number;
 
   @Prop({ default: false })
