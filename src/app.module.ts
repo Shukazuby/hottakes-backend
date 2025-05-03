@@ -6,7 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { HottakesModule } from './hottakes/hottakes.module';
 import * as dotenv from 'dotenv';
 import { TokenModule } from './token/token.module';
-import { CronWork, HottakesService } from './hottakes/hottakes.service';
+import { NotificationModule } from './notification/notification.module';
 dotenv.config();
 
   @Module({
@@ -15,6 +15,7 @@ dotenv.config();
       UsersModule,
       HottakesModule,
       TokenModule,
+      NotificationModule
     ],
   
   controllers: [AppController],
