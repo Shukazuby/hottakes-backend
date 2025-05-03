@@ -68,6 +68,7 @@ export class NotificationService {
     }
 
     return {
+      totalCount: notification.length,
       data: notification,
       success: true,
       code: HttpStatus.OK,

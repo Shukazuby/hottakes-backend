@@ -50,7 +50,8 @@ export class HottakesService {
       recipientUsername: recipient.username,
       username: senderr.username,
       content: {hottakeId: hottake._id},
-      title: `Received a hot take for ${recipient.username}`
+      title: `Received a hot take for ${recipient.username}`,
+      contentType: 'Post'
 
     }
     await this.notiSrv.createNotifiction(payload)
@@ -118,11 +119,10 @@ export class HottakesService {
             $addFields: {
               totalReactions: {
                 $add: [
-                  { $ifNull: ['$hot', 0] },
+                  { $ifNull: ['$valid', 0] },
                   { $ifNull: ['$spicy', 0] },
                   { $ifNull: ['$trash', 0] },
                   { $ifNull: ['$mid', 0] },
-                  { $ifNull: ['$cold', 0] },
                 ],
               },
             },
@@ -138,19 +138,18 @@ export class HottakesService {
           { $match: matchUserTakes },
           {
             $addFields: {
-              hot: { $ifNull: ['$hot', 0] },
+              valid: { $ifNull: ['$valid', 0] },
               spicy: { $ifNull: ['$spicy', 0] },
               trash: { $ifNull: ['$trash', 0] },
-              cold: { $ifNull: ['$cold', 0] },
               mid: { $ifNull: ['$mid', 0] },
             },
           },
           {
             $addFields: {
-              positive: { $add: ['$hot', '$spicy'] },
-              negative: { $add: ['$trash', '$cold'] },
+              positive: { $add: ['$valid', '$spicy'] },
+              negative: { $add: ['$trash'] },
               totalReactions: {
-                $add: ['$hot', '$spicy', '$trash', '$cold', '$mid'],
+                $add: ['$valid', '$spicy', '$trash', '$mid'],
               },
             },
           },
@@ -224,11 +223,10 @@ export class HottakesService {
             $addFields: {
               totalReactions: {
                 $add: [
-                  { $ifNull: ['$hot', 0] },
+                  { $ifNull: ['$valid', 0] },
                   { $ifNull: ['$spicy', 0] },
                   { $ifNull: ['$trash', 0] },
                   { $ifNull: ['$mid', 0] },
-                  { $ifNull: ['$cold', 0] },
                 ],
               },
             },
@@ -244,19 +242,18 @@ export class HottakesService {
         hottakes = await this.hotTakeModel.aggregate([
           {
             $addFields: {
-              hot: { $ifNull: ['$hot', 0] },
+              valid: { $ifNull: ['$valid', 0] },
               spicy: { $ifNull: ['$spicy', 0] },
               trash: { $ifNull: ['$trash', 0] },
-              cold: { $ifNull: ['$cold', 0] },
               mid: { $ifNull: ['$mid', 0] },
             },
           },
           {
             $addFields: {
-              positive: { $add: ['$hot', '$spicy'] },
-              negative: { $add: ['$trash', '$cold'] },
+              positive: { $add: ['$valid', '$spicy'] },
+              negative: { $add: ['$trash'] },
               totalReactions: {
-                $add: ['$hot', '$spicy', '$trash', '$cold', '$mid'],
+                $add: ['$valid', '$spicy', '$trash', '$mid'],
               },
             },
           },
@@ -353,7 +350,7 @@ export class HottakesService {
     reaction: string,
     username: string,
   ): Promise<BaseResponseTypeDTO> {
-    const validReactions = ['hot', 'spicy', 'trash', 'mid', 'cold', 'valid'];
+    const validReactions = ['spicy', 'trash', 'mid',  'valid'];
     username = username.toLowerCase();
 
     if (!validReactions.includes(reaction)) {
@@ -409,8 +406,8 @@ export class HottakesService {
       recipientUsername: hotTake.sender,
       username: user.username,
       content: {hottakeId: hotTake._id, reaction: reaction},
-      title: `${user.username} reacted "${reaction}" to your take`
-
+      title: `${user.username} reacted (${reaction}) to your take`,
+      contentType: 'Reaction'
     }
     
     await this.notiSrv.createNotifiction(payload)
@@ -475,11 +472,10 @@ export class HottakesService {
             $addFields: {
               totalReactions: {
                 $add: [
-                  { $ifNull: ['$hot', 0] },
+                  { $ifNull: ['$valid', 0] },
                   { $ifNull: ['$spicy', 0] },
                   { $ifNull: ['$trash', 0] },
                   { $ifNull: ['$mid', 0] },
-                  { $ifNull: ['$cold', 0] },
                 ],
               },
             },
@@ -495,19 +491,18 @@ export class HottakesService {
           { $match: baseMatchStage },
           {
             $addFields: {
-              hot: { $ifNull: ['$hot', 0] },
+              valid: { $ifNull: ['$valid', 0] },
               spicy: { $ifNull: ['$spicy', 0] },
               trash: { $ifNull: ['$trash', 0] },
-              cold: { $ifNull: ['$cold', 0] },
               mid: { $ifNull: ['$mid', 0] },
             },
           },
           {
             $addFields: {
-              positive: { $add: ['$hot', '$spicy'] },
-              negative: { $add: ['$trash', '$cold'] },
+              positive: { $add: ['$valid', '$spicy'] },
+              negative: { $add: ['$trash'] },
               totalReactions: {
-                $add: ['$hot', '$spicy', '$trash', '$cold', '$mid'],
+                $add: ['$valid', '$spicy', '$trash', '$mid'],
               },
             },
           },
@@ -609,11 +604,10 @@ export class HottakesService {
             $addFields: {
               totalReactions: {
                 $add: [
-                  { $ifNull: ['$hot', 0] },
+                  { $ifNull: ['$valid', 0] },
                   { $ifNull: ['$spicy', 0] },
                   { $ifNull: ['$trash', 0] },
                   { $ifNull: ['$mid', 0] },
-                  { $ifNull: ['$cold', 0] },
                 ],
               },
             },
@@ -629,19 +623,18 @@ export class HottakesService {
           { $match: matchUserTakes },
           {
             $addFields: {
-              hot: { $ifNull: ['$hot', 0] },
+              valid: { $ifNull: ['$valid', 0] },
               spicy: { $ifNull: ['$spicy', 0] },
               trash: { $ifNull: ['$trash', 0] },
-              cold: { $ifNull: ['$cold', 0] },
               mid: { $ifNull: ['$mid', 0] },
             },
           },
           {
             $addFields: {
-              positive: { $add: ['$hot', '$spicy'] },
-              negative: { $add: ['$trash', '$cold'] },
+              positive: { $add: ['$valid', '$spicy'] },
+              negative: { $add: ['$trash'] },
               totalReactions: {
-                $add: ['$hot', '$spicy', '$trash', '$cold', '$mid'],
+                $add: ['$valid', '$spicy', '$trash', '$mid'],
               },
             },
           },

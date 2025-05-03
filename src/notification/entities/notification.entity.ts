@@ -20,6 +20,9 @@ export class Notifications {
   content: ContentObj;
 
   @Prop()
+  contentType: string;
+
+  @Prop()
   title: string;
 
   @Prop({ default: false })
