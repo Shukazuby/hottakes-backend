@@ -48,7 +48,7 @@ export class HottakesService {
 
     const payload = {
       recipientUsername: recipient.username,
-      username: senderr.username,
+      username: senderr?.username ?? 'anonymous',
       content: {hottakeId: hottake._id},
       title: `Received a hot take for ${recipient.username}`,
       contentType: 'Post'

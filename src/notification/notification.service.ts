@@ -33,7 +33,7 @@ export class NotificationService {
 
     const notification = new this.notificationModel({
       ...dto,
-      senderId: senderUser._id,
+      senderId: senderUser?._id,
       receiverId: receipiant._id,
     });
 
