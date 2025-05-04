@@ -14,39 +14,76 @@ export class NotificationService {
     @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
 
-  async createNotifiction(dto: CreateNotificationDto): Promise<BaseResponseTypeDTO> {
-    const username = dto.username.toLowerCase();
-    const receipiantUsername = dto.recipientUsername.toLowerCase();
+  // async createNotifiction(dto: CreateNotificationDto): Promise<BaseResponseTypeDTO> {
+  //   const username = dto.username.toLowerCase();
+  //   const receipiantUsername = dto.recipientUsername.toLowerCase();
 
+  //   let sender = 'anonymous';
+  //   const senderUser = await this.userModel.findOne({ username });
+  //   if (senderUser) {
+  //     sender = senderUser.username;
+  //   }
+
+  //   const receipiant = await this.userModel.findOne({
+  //     username: receipiantUsername,
+  //   });
+  //   if (!receipiant) {
+  //     throw new BadRequestException('Receipient does not exist');
+  //   }
+
+  //   const notification = new this.notificationModel({
+  //     ...dto,
+  //     senderId: senderUser?._id,
+  //     receiverId: receipiant._id,
+  //   });
+
+  //   await notification.save();
+
+  //   return {
+  //     data: notification,
+  //     success: true,
+  //     code: HttpStatus.CREATED,
+  //     message: 'Notification created',
+  //   };
+  // }
+
+  async createNotifiction(dto: CreateNotificationDto): Promise<BaseResponseTypeDTO> {
+    const senderUsername = dto.username.toLowerCase();
+    const recipientUsername = dto.recipientUsername.toLowerCase();
+  
     let sender = 'anonymous';
-    const senderUser = await this.userModel.findOne({ username });
+    const senderUser = await this.userModel.findOne({ username: senderUsername });
+  
     if (senderUser) {
       sender = senderUser.username;
     }
-
-    const receipiant = await this.userModel.findOne({
-      username: receipiantUsername,
-    });
-    if (!receipiant) {
-      throw new BadRequestException('Receipient does not exist');
+  
+    if (recipientUsername !== 'anonymous') {
+      const recipient = await this.userModel.findOne({ username: recipientUsername });
+  
+      if (!recipient) {
+        throw new BadRequestException('Recipient does not exist');
+      }
+  
+      const notification = new this.notificationModel({
+        ...dto,
+        senderId: senderUser?._id,
+        receiverId: recipient._id,
+      });
+  
+      await notification.save();
+  
+      return {
+        data: notification,
+        success: true,
+        code: HttpStatus.CREATED,
+        message: 'Notification created',
+      };
     }
-
-    const notification = new this.notificationModel({
-      ...dto,
-      senderId: senderUser?._id,
-      receiverId: receipiant._id,
-    });
-
-    await notification.save();
-
-    return {
-      data: notification,
-      success: true,
-      code: HttpStatus.CREATED,
-      message: 'Notification created',
-    };
+  
+    // throw new BadRequestException('Invalid recipient username');
   }
-
+  
   async findAll(username: string): Promise<BaseResponseTypeDTO> {
     username = username.toLowerCase();
 

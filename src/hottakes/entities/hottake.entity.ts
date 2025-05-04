@@ -12,10 +12,8 @@ export enum Category {
 
 export enum REACTIONS {
   SPICY = 'spicy',
-  HOT = 'hot',
   MID = 'mid',
   TRASH = 'trash',
-  COLD = 'cold',
   VALID = 'valid',
 }
 

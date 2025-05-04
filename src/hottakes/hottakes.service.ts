@@ -702,7 +702,7 @@ export class HottakesService {
         spicy = 0,
         hot = 0,
       } = take;
-      totalReactions += cold + trash + mid + valid + spicy + hot;
+      totalReactions += trash + mid + valid + spicy;
     }
 
     return {
