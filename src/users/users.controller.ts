@@ -1,6 +1,6 @@
 import { Controller, Post, Body, HttpStatus, Get, Param } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, LoginDto } from './dto/create-user.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BaseResponseTypeDTO } from 'src/utils';
 
@@ -23,6 +23,23 @@ export class UsersController {
     @Body() payload: CreateUserDto,
   ): Promise<BaseResponseTypeDTO> {
     const result = await this.usersService.createUser(payload);
+    return result;
+  }
+
+  @Post('signIn')
+  @ApiOperation({ summary: 'Sign in a User With 3rd party/email' })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'User signIn with 3rd party',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid input data',
+  })
+  async loginWithThirdParty(
+    @Body() payload: LoginDto,
+  ): Promise<BaseResponseTypeDTO> {
+    const result = await this.usersService.loginWithThirdParty(payload);
     return result;
   }
 
