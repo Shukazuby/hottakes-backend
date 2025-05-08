@@ -206,13 +206,14 @@ export class HottakesService {
     filter?: FILTERS,
   ): Promise<BaseResponseTypeDTO> {
     let hottakes: HotTake[];
+    const matchStage = { isPublic: true };
 
     username = username.toLocaleLowerCase();
     const user = await this.userModel.findOne({ username });
     if (!user) throw new NotFoundException(`User not found.`);
 
     const page = Number(pagination?.page) || 1;
-    const limit = Number(pagination?.limit) || 50;
+    const limit = Number(pagination?.limit) || 100;
     const skip = (page - 1) * limit;
 
     switch (filter) {
@@ -300,22 +301,11 @@ export class HottakesService {
         break;
     }
 
-    hottakes = hottakes.filter((hotTake) => {
-      const recipientUsername = hotTake.recipientUsername?.toLowerCase();
+    const totalCount = await this.hotTakeModel.countDocuments(matchStage);
 
-      if (username.toLowerCase() === recipientUsername) {
-        const alreadyReacted = hotTake.reactedUsers?.some(
-          (userReaction) =>
-            userReaction.username.toLowerCase() === recipientUsername,
-        );
-        return !alreadyReacted;
-      }
-
-      return true;
-    });
 
     return {
-      totalCount: hottakes.length,
+      totalCount,
       data: hottakes,
       success: true,
       code: HttpStatus.OK,
