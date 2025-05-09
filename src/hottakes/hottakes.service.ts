@@ -520,7 +520,7 @@ export class HottakesService {
           .find({
             'reactedUsers.username': username,
           })
-          .sort({ createdAt: -1 })
+          .sort({ updatedAt: -1 })
           .skip(skip)
           .limit(limit)
           .exec();
@@ -531,7 +531,7 @@ export class HottakesService {
           .find({
             'reactedUsers.username': username,
           })
-          .sort({ createdAt: -1 })
+          .sort({ updatedAt: -1 })
           .skip(skip)
           .limit(limit)
           .exec();
