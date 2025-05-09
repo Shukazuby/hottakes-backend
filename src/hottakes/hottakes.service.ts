@@ -363,7 +363,8 @@ export class HottakesService {
     if (previousReaction) {
       if (previousReaction.reaction === reaction) {
         // Same reaction => remove it (toggle off)
-        hotTake[reaction] -= 1;
+        hotTake[reaction] = Math.round(hotTake[reaction] - 1);
+        // hotTake[reaction] -= 1;
         hotTake.reactedUsers = hotTake.reactedUsers.filter(
           (reactedUser) => reactedUser.username !== username,
         );
@@ -377,7 +378,8 @@ export class HottakesService {
         };
       } else {
         // Different reaction => update it
-        hotTake[previousReaction.reaction] -= 1;
+        hotTake[previousReaction.reaction] = Math.round(hotTake[previousReaction.reaction] - 1);
+        // hotTake[previousReaction.reaction] -= 1;
       }
     }
 
