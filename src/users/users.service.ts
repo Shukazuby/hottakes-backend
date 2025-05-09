@@ -80,10 +80,11 @@ export class UsersService {
     existingUser.username = username;
     await existingUser.save();
     const profileLink = await this.generateProfileUrl(username);
+    existingUser.user_link = profileLink;
+    await existingUser.save();
     const socials = await this.getShareUrls(username);
     existingUser.whatsappShare = socials.whatsappShareUrl;
     existingUser.twitterShare = socials.twitterShareUrl;
-    existingUser.user_link = profileLink;
     const updatedUser = await existingUser.save();
 
     return {
