@@ -25,6 +25,9 @@ export class Notifications {
   @Prop()
   title: string;
 
+  @Prop()
+  deviceId?: string;
+
   @Prop({ default: false })
   isRead: boolean;
 

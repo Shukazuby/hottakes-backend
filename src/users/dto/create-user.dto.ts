@@ -13,4 +13,6 @@ export class LoginDto {
   @ApiProperty({ example: 'joe@example.com', required: true })
   @IsEmail()
   email: string;
+  @ApiProperty({ example: 'device-id', required: true })
+  deviceId: string;
 }

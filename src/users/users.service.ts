@@ -26,6 +26,8 @@ export class UsersService {
       });
       await user.save();
     }
+    user.deviceId = dto.deviceId
+    await user.save();
     return {
       data: user,
       success: true,

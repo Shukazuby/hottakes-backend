@@ -12,6 +12,7 @@ import { FILTERS, HotTake } from './entities/hottake.entity';
 import * as cron from 'node-cron'; // Ensure this import is present
 import { faker } from '@faker-js/faker';
 import { NotificationService } from 'src/notification/notification.service';
+import { sendPushNotification } from 'src/utils/utils.function';
 
 @Injectable()
 export class HottakesService {
@@ -50,11 +51,16 @@ export class HottakesService {
       recipientUsername: recipient.username,
       username: senderr?.username ?? 'anonymous',
       content: {hottakeId: hottake._id},
-      title: `Received a hot take for ${recipient.username}`,
-      contentType: 'Post'
+      title: `Received a hot take from ${recipient.username}`,
+      contentType: 'Post',
+      deviceId: recipient.deviceId
 
     }
     await this.notiSrv.createNotifiction(payload)
+    console.log(recipient.deviceId)
+    await sendPushNotification(`${payload.username} sent you a hot take`, payload.deviceId, 'For you' )
+    
+    console.log('Notification sent')
 
     // const takeUrl = await this.generateTakeUrl(hottake._id.toString());
     // hottake.takeUrl = takeUrl;

@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/users/entities/user.entity';
 import { Notifications } from './entities/notification.entity';
+import { sendPushNotification } from 'src/utils/utils.function';
 
 @Injectable()
 export class NotificationService {
@@ -66,15 +67,20 @@ export class NotificationService {
       }
   
       const notification = new this.notificationModel({
-        ...dto,
+        recipientUsername,
+        username: senderUsername,
+        title: dto.title,
+        content: dto.content,
         senderId: senderUser?._id,
         receiverId: recipient._id,
+        deviceId: recipient.deviceId
       });
   
       await notification.save();
+
   
       return {
-        data: notification,
+        data: notification.content,
         success: true,
         code: HttpStatus.CREATED,
         message: 'Notification created',

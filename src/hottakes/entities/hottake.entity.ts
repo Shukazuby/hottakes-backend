@@ -35,8 +35,8 @@ export class HotTake {
   @Prop({ required: true })
   content: string;
 
-  @Prop({ required: true, enum: Category })
-  category: Category;
+  @Prop({ enum: Category })
+  category?: Category;
 
   @Prop({ default: 0 })
   hot: number;

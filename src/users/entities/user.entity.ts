@@ -16,6 +16,9 @@ picture?: string
 @Prop()
 googleId?: string
 
+@Prop() 
+deviceId?: string
+
 @Prop()
 user_link: string
 
