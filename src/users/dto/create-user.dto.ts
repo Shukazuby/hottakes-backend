@@ -16,3 +16,9 @@ export class LoginDto {
   @ApiProperty({ example: 'device-id', required: true })
   token: string;
 }
+export class UpdateUsernameDto {
+  @ApiProperty({ example: 'hotgirl_summer', required: true })
+  current: string;
+  @ApiProperty({ example: 'coldgirl_winter', required: true })
+  newUsername: string;
+}

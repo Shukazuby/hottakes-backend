@@ -1,6 +1,14 @@
-import { Controller, Post, Body, HttpStatus, Get, Param } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpStatus,
+  Get,
+  Param,
+  Patch,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto, LoginDto } from './dto/create-user.dto';
+import { CreateUserDto, LoginDto, UpdateUsernameDto } from './dto/create-user.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BaseResponseTypeDTO } from 'src/utils';
 
@@ -54,17 +62,32 @@ export class UsersController {
     return this.usersService.getShareUrls(username);
   }
 
-    @Get()
-    @ApiOperation({ summary: 'Fetch all Users' })
-    @ApiResponse({
-      status: HttpStatus.OK,
-      description: 'Users fetched ',
-    })
-    @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid input' })
-    async getAllTakes(
-    ): Promise<BaseResponseTypeDTO> {
-      const result = await this.usersService.findAllUsers();
-      return result;
-    }
-  
+  @Get()
+  @ApiOperation({ summary: 'Fetch all Users' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Users fetched ',
+  })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid input' })
+  async getAllTakes(): Promise<BaseResponseTypeDTO> {
+    const result = await this.usersService.findAllUsers();
+    return result;
+  }
+
+  @Patch('username')
+  @ApiOperation({ summary: 'Update User name' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'User name updated',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid input data',
+  })
+  async updateUsername(
+    @Body() payload: UpdateUsernameDto,
+  ): Promise<BaseResponseTypeDTO> {
+    const result = await this.usersService.updateUsername(payload);
+    return result;
+  }
 }

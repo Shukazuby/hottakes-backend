@@ -1,9 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpStatus,
+  Query,
+} from '@nestjs/common';
 import { NotificationService } from './notification.service';
-import { CreateNotificationDto } from './dto/create-notification.dto';
-import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { BaseResponseTypeDTO } from 'src/utils';
+import { PaginationFilterDTO } from 'src/utils';
 
 @ApiTags('Notification')
 @Controller('notification')
@@ -25,8 +33,9 @@ export class NotificationController {
   })
   async findAll(
     @Param('username') username: string,
+    @Query() pagination?: PaginationFilterDTO,
   ) {
-    const result = await this.notificationService.findAll(username);
+    const result = await this.notificationService.findAll(username, pagination);
     return result;
   }
 

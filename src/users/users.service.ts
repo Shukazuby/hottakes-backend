@@ -6,7 +6,11 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { CreateUserDto, LoginDto } from './dto/create-user.dto';
+import {
+  CreateUserDto,
+  LoginDto,
+  UpdateUsernameDto,
+} from './dto/create-user.dto';
 import { BaseResponseTypeDTO } from 'src/utils';
 import { User } from './entities/user.entity';
 import { Model } from 'mongoose';
@@ -26,7 +30,7 @@ export class UsersService {
       });
       await user.save();
     }
-    user.token = dto.token
+    user.token = dto.token;
     await user.save();
     return {
       data: user,
@@ -154,5 +158,36 @@ export class UsersService {
       whatsappShareUrl,
       twitterShareUrl,
     };
+  }
+
+  async updateUsername(dto: UpdateUsernameDto): Promise<BaseResponseTypeDTO> {
+    const newU = dto.newUsername.toLowerCase();
+    try {
+      const user = await this.userModel.findOne({
+        username: dto.current.toLowerCase(),
+      });
+      if (!user) {
+        throw new NotFoundException(`Current username does not exist.`);
+      }
+      await this.findByUsername(newU);
+      user.username = newU;
+      const profileLink = await this.generateProfileUrl(newU);
+      user.user_link = profileLink;
+      await user.save();
+      const socials = await this.getShareUrls(newU);
+      user.whatsappShare = socials.whatsappShareUrl;
+      user.twitterShare = socials.twitterShareUrl;
+
+      await user.save();
+
+      return {
+        data: user,
+        success: true,
+        code: HttpStatus.OK,
+        message: 'User name updated ',
+      };
+    } catch (ex) {
+      throw ex;
+    }
   }
 }
