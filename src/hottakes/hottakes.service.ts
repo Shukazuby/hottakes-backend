@@ -53,12 +53,12 @@ export class HottakesService {
       content: {hottakeId: hottake._id},
       title: `Received a hot take from ${recipient.username}`,
       contentType: 'Post',
-      deviceId: recipient.deviceId
+      token: recipient.token
 
     }
     await this.notiSrv.createNotifiction(payload)
-    console.log(recipient.deviceId)
-    await sendPushNotification(`${payload.username} sent you a hot take`, payload.deviceId, 'For you' )
+    console.log(recipient.token)
+    await sendPushNotification(`${payload.username} sent you a hot take`, payload.token, 'For you' )
     
     console.log('Notification sent')
 

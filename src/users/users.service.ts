@@ -26,7 +26,7 @@ export class UsersService {
       });
       await user.save();
     }
-    user.deviceId = dto.deviceId
+    user.token = dto.token
     await user.save();
     return {
       data: user,
