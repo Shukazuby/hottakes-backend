@@ -100,7 +100,7 @@ export class NotificationService {
 
     const notification = await this.notificationModel.find({
       receiverId: user._id,
-    }).sort({createdAt: -1});
+    }).sort({createdAt: -1}).populate(['content.hottakeId']);
     if (!notification || notification.length < 0) {
       return {
         totalCount: notification.length,

@@ -2,10 +2,18 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 export class ContentObj {
   @Prop({ ref: 'HotTake' })
+  @Prop()
+  reaction?: string;
+  
+  @Prop()
+  takeContent?: string;
+
+  @Prop()
   hottakeId?: string;
 
   @Prop()
-  reaction?: string;
+  sender?: string;
+
 }
 
 @Schema({ timestamps: true })
