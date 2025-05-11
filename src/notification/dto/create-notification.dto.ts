@@ -9,7 +9,4 @@ export class CreateNotificationDto {
 
   @ApiProperty()
   content: any;
-
-  @ApiProperty()
-  title: string;
 }

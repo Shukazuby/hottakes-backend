@@ -50,15 +50,14 @@ export class HottakesService {
 
     const payload = {
       recipientUsername: recipient.username,
-      username: senderr?.username ?? 'anonymous',
       content: {
-        sender: sender,
+        sender: senderr.username,
         takeContent: hottake.content,
         hottakeId: hottake._id,
       },
-      title: `Received a hot take from ${recipient.username}`,
       contentType: 'Post',
       token: recipient.token,
+      username: senderr?.username ?? 'anonymous',
     };
     await this.notiSrv.createNotifiction(payload);
     let content = '';
@@ -78,11 +77,7 @@ export class HottakesService {
     content =
       receivedHotTake[Math.floor(Math.random() * receivedHotTake.length)];
 
-    await sendPushNotification(
-      content,
-      payload.token,
-      'For You',
-    );
+    await sendPushNotification(content, payload.token, 'For You');
 
     // const takeUrl = await this.generateTakeUrl(hottake._id.toString());
     // hottake.takeUrl = takeUrl;
@@ -430,16 +425,15 @@ export class HottakesService {
 
     const payload = {
       recipientUsername: hotTake.sender,
-      username: user.username,
       content: {
         reaction: reaction,
-        sender: hotTake.sender,
+        sender: user.username,
         takeContent: hotTake.content,
         hottakeId: hotTake._id,
       },
-      title: `${user.username} reacted (${reaction}) to your take`,
       contentType: 'Reaction',
       token: userToken,
+      username: user.username,
     };
 
     await this.notiSrv.createNotifiction(payload);
@@ -665,22 +659,6 @@ export class HottakesService {
     return `${baseUrl}/${encodeURIComponent(id.toLowerCase())}`;
   }
 
-  async createManyHottakes(dto: CreateHottakeDto[]): Promise<any> {
-    try {
-      const modifiedHottakes = dto.map((item) => ({
-        ...item,
-        recipientUsername: item.to,
-      }));
-
-      const result = await this.hotTakeModel.insertMany(modifiedHottakes);
-
-      return result;
-    } catch (error) {
-      console.error('Error inserting hottakes:', error);
-      throw error;
-    }
-  }
-
   async getMyTakes(
     username: string,
     pagination?: PaginationFilterDTO,
@@ -818,6 +796,30 @@ export class HottakesService {
       code: HttpStatus.OK,
       message: '',
     };
+  }
+
+/**
+ * ------------------------------------------------
+ * ------------------------------------------------
+ * Section for cronjob use
+ * ------------------------------------------------
+ * ------------------------------------------------
+ */
+
+  async createManyHottakes(dto: CreateHottakeDto[]): Promise<any> {
+    try {
+      const modifiedHottakes = dto.map((item) => ({
+        ...item,
+        recipientUsername: item.to,
+      }));
+
+      const result = await this.hotTakeModel.insertMany(modifiedHottakes);
+
+      return result;
+    } catch (error) {
+      console.error('Error inserting hottakes:', error);
+      throw error;
+    }
   }
 }
 

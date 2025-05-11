@@ -19,9 +19,6 @@ export class ContentObj {
 @Schema({ timestamps: true })
 export class Notifications {
   @Prop()
-  username: string;
-
-  @Prop()
   receipiantUsername: string;
 
   @Prop()
@@ -29,9 +26,6 @@ export class Notifications {
 
   @Prop()
   contentType: string;
-
-  @Prop()
-  title: string;
 
   @Prop()
   deviceId?: string;

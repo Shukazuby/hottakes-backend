@@ -68,8 +68,6 @@ export class NotificationService {
   
       const notification = new this.notificationModel({
         recipientUsername,
-        username: senderUsername,
-        title: dto.title,
         content: dto.content,
         senderId: senderUser?._id,
         receiverId: recipient._id,
