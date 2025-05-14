@@ -47,6 +47,9 @@ export class UsersService {
       'Welcome',
     );
 
+    user.isWelcomeNotified = true;
+    await user.save();
+
     return {
       data: user,
       success: true,
