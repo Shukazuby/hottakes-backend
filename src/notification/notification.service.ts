@@ -83,6 +83,7 @@ export class NotificationService {
         senderId: senderUser?._id,
         receiverId: recipient._id,
         token: recipient.token,
+        contentType: dto.contentType
       });
 
       await notification.save();

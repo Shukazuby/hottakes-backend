@@ -3,15 +3,15 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './entities/user.entity';
-import { Token, TokenSchema } from 'src/token/schema/token.schema';
-import { TokenModule } from 'src/token/token.module';
+import { Notifications, NotificationsSchema } from 'src/notification/entities/notification.entity';
+import { NotificationModule } from 'src/notification/notification.module';
 
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-    // MongooseModule.forFeature([{ name: Token.name, schema: TokenSchema }]),
-    // forwardRef(() => TokenModule),
+    MongooseModule.forFeature([{ name: Notifications.name, schema: NotificationsSchema }]),
+    forwardRef(() => NotificationModule),
 
   ],
   controllers: [UsersController],

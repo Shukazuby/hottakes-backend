@@ -1,11 +1,4 @@
-import {
-  BadRequestException,
-  ConflictException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import {
   CreateUserDto,
   LoginDto,
@@ -15,10 +8,13 @@ import { BaseResponseTypeDTO } from 'src/utils';
 import { User } from './entities/user.entity';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
+import { sendPushNotification } from 'src/utils/utils.function';
+import { NotificationService } from 'src/notification/notification.service';
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
+    private readonly notiSrv: NotificationService,
   ) {}
 
   async loginWithThirdParty(dto: LoginDto): Promise<BaseResponseTypeDTO> {
@@ -32,6 +28,25 @@ export class UsersService {
     }
     user.token = dto.token;
     await user.save();
+    const payload = {
+      recipientUsername: user.username,
+      content: {
+        sender: 'Hot Takes App',
+        takeContent: 'Welcome To Hot Takes! Start sharing your opinions anonymously.',
+        notificationType: 'general',
+      },
+      contentType: 'general',
+      token: user.token,
+      username: 'Hot Takes App',
+    };
+    await this.notiSrv.createNotifiction(payload);
+
+    await sendPushNotification(
+      'Welcome To Hot Takes! Start sharing your opinions anonymously.',
+      payload.token,
+      'Welcome',
+    );
+
     return {
       data: user,
       success: true,

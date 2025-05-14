@@ -54,8 +54,9 @@ export class HottakesService {
         sender: senderr.username ?? 'anonymous',
         takeContent: hottake.content,
         hottakeId: hottake._id,
+        notificationType: 'post',
       },
-      contentType: 'Post',
+      contentType: 'post',
       token: recipient.token,
       username: senderr?.username ?? 'anonymous',
     };
@@ -430,8 +431,9 @@ export class HottakesService {
         sender: user.username,
         takeContent: hotTake.content,
         hottakeId: hotTake._id,
+        notificationType: 'reaction',
       },
-      contentType: 'Reaction',
+      contentType: 'reaction',
       token: userToken,
       username: user.username,
     };
@@ -798,13 +800,13 @@ export class HottakesService {
     };
   }
 
-/**
- * ------------------------------------------------
- * ------------------------------------------------
- * Section for cronjob use
- * ------------------------------------------------
- * ------------------------------------------------
- */
+  /**
+   * ------------------------------------------------
+   * ------------------------------------------------
+   * Section for cronjob use
+   * ------------------------------------------------
+   * ------------------------------------------------
+   */
 
   async createManyHottakes(dto: CreateHottakeDto[]): Promise<any> {
     try {

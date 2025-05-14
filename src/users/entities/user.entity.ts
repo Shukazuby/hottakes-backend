@@ -27,6 +27,9 @@ whatsappShare: string
 
 @Prop()
 twitterShare: string
+
+@Prop({default: false})
+isWelcomeNotified: boolean
 }
 
 export type UserDocument = User & Document;
