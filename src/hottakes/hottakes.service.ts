@@ -51,7 +51,7 @@ export class HottakesService {
     const payload = {
       recipientUsername: recipient.username,
       content: {
-        sender: senderr.username,
+        sender: senderr.username ?? 'anonymous',
         takeContent: hottake.content,
         hottakeId: hottake._id,
       },
