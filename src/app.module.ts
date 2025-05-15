@@ -7,17 +7,19 @@ import { HottakesModule } from './hottakes/hottakes.module';
 import * as dotenv from 'dotenv';
 import { TokenModule } from './token/token.module';
 import { NotificationModule } from './notification/notification.module';
+import { CronWorkModule } from './utils/Cron/cron.module';
 dotenv.config();
 
-  @Module({
-    imports: [
-      MongooseModule.forRoot(String(process.env.MONGODB_URL).trim()),
-      UsersModule,
-      HottakesModule,
-      TokenModule,
-      NotificationModule
-    ],
-  
+@Module({
+  imports: [
+    MongooseModule.forRoot(String(process.env.MONGODB_URL).trim()),
+    UsersModule,
+    HottakesModule,
+    TokenModule,
+    NotificationModule,
+    CronWorkModule,
+  ],
+
   controllers: [AppController],
   providers: [AppService],
 })

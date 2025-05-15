@@ -30,6 +30,15 @@ twitterShare: string
 
 @Prop({default: false})
 isWelcomeNotified: boolean
+
+@Prop({default: false})
+isInactive1: boolean
+
+@Prop({default: false})
+isInactive2: boolean
+
+@Prop({default: false})
+isInactive3: boolean
 }
 
 export type UserDocument = User & Document;

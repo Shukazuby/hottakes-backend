@@ -32,7 +32,8 @@ export class UsersService {
       recipientUsername: user.username,
       content: {
         sender: 'Hot Takes App',
-        takeContent: 'Welcome To Hot Takes! Start sharing your opinions anonymously.',
+        takeContent:
+          'Welcome To Hot Takes! Start sharing your opinions anonymously.',
         notificationType: 'general',
       },
       contentType: 'general',
@@ -57,38 +58,6 @@ export class UsersService {
       message: 'User Signed In',
     };
   }
-
-  // async createUser(dto: CreateUserDto): Promise<BaseResponseTypeDTO> {
-  //   const username = dto.username.toLowerCase();
-  //   const findUser = await this.findByEmail(dto?.email);
-  //   if (findUser) {
-  //     const profilelink = await this.generateProfileUrl(username);
-  //     const socials = await this.getShareUrls(username);
-  //     findUser.username = username;
-  //     findUser.whatsappShare = socials.whatsappShareUrl;
-  //     findUser.twitterShare = socials.twitterShareUrl;
-  //     findUser.user_link = profilelink;
-  //     await findUser.save();
-  //   }
-  //   await this.findByUsername(username);
-  //   const profilelink = await this.generateProfileUrl(username);
-  //   const user = new this.userModel({
-  //     username,
-  //     user_link: profilelink,
-  //   });
-  //   await user.save();
-  //   const socials = await this.getShareUrls(username);
-  //   user.whatsappShare = socials.whatsappShareUrl;
-  //   user.twitterShare = socials.twitterShareUrl;
-  //   const data = await user.save();
-
-  //   return {
-  //     data,
-  //     success: true,
-  //     code: HttpStatus.CREATED,
-  //     message: 'User Created',
-  //   };
-  // }
 
   async createUser(dto: CreateUserDto): Promise<BaseResponseTypeDTO> {
     const username = dto.username.toLowerCase();
@@ -205,6 +174,47 @@ export class UsersService {
         message: 'User name updated ',
       };
     } catch (ex) {
+      throw ex;
+    }
+  }
+
+  async sendGeneralNotification() {
+    try {
+      const users = await this.userModel.find();
+
+      for (const user of users) {
+        // user.isWelcomeNotified = false
+        //   await user.save()
+        // Only notify if not already notified and token exists
+        if (!user.isWelcomeNotified && user.token) {
+          const payload = {
+            recipientUsername: user.username,
+            content: {
+              sender: 'Hot Takes App',
+              takeContent:
+                'Welcome To Hot Takes! Start sharing your opinions anonymously.',
+              notificationType: 'general',
+            },
+            contentType: 'general',
+            token: user.token,
+            username: 'Hot Takes App',
+          };
+
+          await this.notiSrv.createNotifiction(payload);
+
+          await sendPushNotification(
+            'Welcome To Hot Takes! Start sharing your opinions anonymously.',
+            payload.token,
+            'Welcome',
+          );
+
+          user.isWelcomeNotified = true;
+          await user.save();
+        }
+      }
+    } catch (ex) {
+      // It's better to log errors for debugging
+      console.error('Error sending general notifications:', ex);
       throw ex;
     }
   }

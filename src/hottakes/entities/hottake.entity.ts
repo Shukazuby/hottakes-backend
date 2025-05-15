@@ -71,9 +71,11 @@ export class HotTake {
   @Prop()
   takeUrl?: string;
 
-  @Prop({default: true})
+  @Prop({ default: true })
   isPublic?: boolean;
 
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export type HotTakeDocument = HotTake & Document;
