@@ -14,7 +14,7 @@ export class LoginDto {
   @IsEmail()
   email: string;
   @ApiProperty({ example: 'device-id', required: true })
-  token: string;
+  token?: string;
 }
 export class UpdateUsernameDto {
   @ApiProperty({ example: 'hotgirl_summer', required: true })

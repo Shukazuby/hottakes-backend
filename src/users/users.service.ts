@@ -26,7 +26,7 @@ export class UsersService {
       });
       await user.save();
     }
-    user.token = dto.token;
+    user.token = dto?.token;
     await user.save();
     const payload = {
       recipientUsername: user.username,
@@ -40,15 +40,16 @@ export class UsersService {
       token: user.token,
       username: 'Hot Takes App',
     };
-    await this.notiSrv.createNotifiction(payload);
-
-    await sendPushNotification(
-      'Welcome To Hot Takes! Start sharing your opinions anonymously.',
-      payload.token,
-      'Welcome',
-    );
-
-    user.isWelcomeNotified = true;
+    if(!user.isWelcomeNotified && user.token){
+      await this.notiSrv.createNotifiction(payload);
+      await sendPushNotification(
+        'Welcome To Hot Takes! Start sharing your opinions anonymously.',
+        payload.token,
+        'Welcome',
+      );
+  
+      user.isWelcomeNotified = true;
+    }
     await user.save();
 
     return {
