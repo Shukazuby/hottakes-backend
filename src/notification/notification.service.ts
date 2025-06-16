@@ -25,8 +25,8 @@ export class NotificationService {
   async createNotifiction(
     dto: CreateNotificationDto,
   ): Promise<BaseResponseTypeDTO> {
-    const senderUsername = dto.username.toLowerCase();
-    const recipientUsername = dto.recipientUsername.toLowerCase();
+    const senderUsername = dto?.username?.toLowerCase();
+    const recipientUsername = dto?.recipientUsername?.toLowerCase();
 
     let sender = 'anonymous';
     const senderUser = await this.userModel.findOne({
