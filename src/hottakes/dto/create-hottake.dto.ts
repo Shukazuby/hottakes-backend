@@ -1,13 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { Category } from '../entities/hottake.entity';
 
 export class CreateHottakeDto {
   @ApiProperty({ example: 'Your takes here' })
   @IsNotEmpty()
   content: string;
 
-  @ApiProperty({ example: Category.ENTERTAINMENT })
+  @ApiProperty({ example: 'food' })
   @IsNotEmpty()
   category: string;
 
@@ -29,7 +28,7 @@ export class PostHottakeDto {
   @IsNotEmpty()
   content: string;
 
-  @ApiProperty({ example: Category.ENTERTAINMENT })
+  @ApiProperty({ example: 'food' })
   @IsNotEmpty()
   category: string;
 

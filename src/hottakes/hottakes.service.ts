@@ -79,10 +79,6 @@ export class HottakesService {
       receivedHotTake[Math.floor(Math.random() * receivedHotTake.length)];
 
     await sendPushNotification(content, payload.token, 'For You');
-
-    // const takeUrl = await this.generateTakeUrl(hottake._id.toString());
-    // hottake.takeUrl = takeUrl;
-    // await hottake.save();
     const data = await hottake.save();
 
     return {
@@ -104,9 +100,6 @@ export class HottakesService {
     });
     await hottake.save();
 
-    // const takeUrl = await this.generateTakeUrl(hottake._id.toString());
-    // hottake.takeUrl = takeUrl;
-    // await hottake.save();
     const data = await hottake.save();
 
     return {
