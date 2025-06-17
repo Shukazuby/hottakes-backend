@@ -131,42 +131,103 @@ export class NotificationService {
     };
   }
 
+// async sendInactivityNotification() {
+//   try {
+//     const users = await this.userModel.find();
+
+//     const OneDayAgo = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000);
+//     const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
+//     const fourDaysAgo = new Date(Date.now() - 4 * 24 * 60 * 60 * 1000);
+//     const fiveDaysAgo = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000);
+//     const nineDaysAgo = new Date(Date.now() - 9 * 24 * 60 * 60 * 1000);
+//     const tenDaysAgo = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000);
+
+//     for (const user of users) {
+//       const hotTake = await this.hotModel
+//         .findOne({ sender: user.username })
+//         .sort({ createdAt: -1 });
+
+//       // If user has never posted, treat accordingly (e.g. consider all notifications valid)
+//       const lastPostDate = hotTake ? hotTake.createdAt : new Date(0);
+
+//       if (!user.isInactive1 && lastPostDate > OneDayAgo && lastPostDate < twoDaysAgo) {
+//         const message = "The timeline’s too quiet without you. Drop that hot take 🔥👀";
+//         await this.sendNotificationToUser(user, message, 'Where You At?');
+//         user.isInactive1 = true;
+//         await user.save();
+//       } else if (!user.isInactive2 && lastPostDate > fourDaysAgo &&  lastPostDate < fiveDaysAgo) {
+//         const message = "No hot takes, yet? Wow, groundbreaking silence.";
+//         await this.sendNotificationToUser(user, message, 'Still Cooking?');
+//         user.isInactive2 = true;
+//         await user.save();
+//       } else if (!user.isInactive3 && lastPostDate > nineDaysAgo &&  lastPostDate < tenDaysAgo) {
+//         const message = "Been 10 days since your last hot take... just sayin";
+//         await this.sendNotificationToUser(user, message, 'Your Feed Needs You');
+//         user.isInactive3 = true;
+//         await user.save();
+//       }
+//     }
+//   } catch (ex) {
+//     console.error('Error sending inactivity notifications:', ex);
+//     throw ex;
+//   }
+// }
+
 async sendInactivityNotification() {
   try {
     const users = await this.userModel.find();
 
-    const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
-    const fiveDaysAgo = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000);
-    const tenDaysAgo = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000);
+    const now = Date.now();
+    const oneDayAgo = new Date(now - 1 * 24 * 60 * 60 * 1000);
+    const twoDaysAgo = new Date(now - 2 * 24 * 60 * 60 * 1000);
+    const fourDaysAgo = new Date(now - 4 * 24 * 60 * 60 * 1000);
+    const fiveDaysAgo = new Date(now - 5 * 24 * 60 * 60 * 1000);
+    const nineDaysAgo = new Date(now - 9 * 24 * 60 * 60 * 1000);
+    const tenDaysAgo = new Date(now - 10 * 24 * 60 * 60 * 1000);
 
     for (const user of users) {
-      const hotTake = await this.hotModel
+      const latestHotTake = await this.hotModel
         .findOne({ sender: user.username })
         .sort({ createdAt: -1 });
 
-      // If user has never posted, treat accordingly (e.g. consider all notifications valid)
-      const lastPostDate = hotTake ? hotTake.createdAt : new Date(0);
+      const lastPostDate = latestHotTake ? latestHotTake.createdAt : new Date(0);
 
-      if (!user.isInactive1 && lastPostDate < twoDaysAgo) {
-        const message = "The timeline’s too quiet without you. Drop that hot take 🔥👀";
-        await this.sendNotificationToUser(user, message, 'Where You At?');
+      // Inactivity 1: Between 2 and 1 days ago
+      if (!user.isInactive1 && lastPostDate <= twoDaysAgo && lastPostDate > oneDayAgo) {
+        await this.sendNotificationToUser(
+          user,
+          "The timeline’s too quiet without you. Drop that hot take 🔥👀",
+          "Where You At?"
+        );
         user.isInactive1 = true;
         await user.save();
-      } else if (!user.isInactive2 && lastPostDate < fiveDaysAgo) {
-        const message = "No hot takes, yet? Wow, groundbreaking silence.";
-        await this.sendNotificationToUser(user, message, 'Still Cooking?');
+      }
+
+      // Inactivity 2: Between 5 and 4 days ago
+      else if (!user.isInactive2 && lastPostDate <= fiveDaysAgo && lastPostDate > fourDaysAgo) {
+        await this.sendNotificationToUser(
+          user,
+          "No hot takes, yet? Wow, groundbreaking silence.",
+          "Still Cooking?"
+        );
         user.isInactive2 = true;
         await user.save();
-      } else if (!user.isInactive3 && lastPostDate < tenDaysAgo) {
-        const message = "Been 10 days since your last hot take... just sayin";
-        await this.sendNotificationToUser(user, message, 'Your Feed Needs You');
+      }
+
+      // Inactivity 3: Between 10 and 9 days ago
+      else if (!user.isInactive3 && lastPostDate <= tenDaysAgo && lastPostDate > nineDaysAgo) {
+        await this.sendNotificationToUser(
+          user,
+          "Been 10 days since your last hot take... just sayin",
+          "Your Feed Needs You"
+        );
         user.isInactive3 = true;
         await user.save();
       }
     }
-  } catch (ex) {
-    console.error('Error sending inactivity notifications:', ex);
-    throw ex;
+  } catch (error) {
+    console.error("Error sending inactivity notifications:", error);
+    throw error;
   }
 }
 
