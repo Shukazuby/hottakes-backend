@@ -6,9 +6,14 @@ import {
   Get,
   Param,
   Patch,
+  Delete,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto, LoginDto, UpdateUsernameDto } from './dto/create-user.dto';
+import {
+  CreateUserDto,
+  LoginDto,
+  UpdateUsernameDto,
+} from './dto/create-user.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BaseResponseTypeDTO } from 'src/utils';
 
@@ -88,6 +93,18 @@ export class UsersController {
     @Body() payload: UpdateUsernameDto,
   ): Promise<BaseResponseTypeDTO> {
     const result = await this.usersService.updateUsername(payload);
+    return result;
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: ' Delete a user by user Id' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'User Deleted' })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid input data',
+  })
+  async deleteTake(@Param('id') id: string) {
+    const result = await this.usersService.deleteUser(id);
     return result;
   }
 }

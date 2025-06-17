@@ -225,4 +225,16 @@ export class UsersService {
       throw ex;
     }
   }
+
+    async deleteUser(id: string): Promise<BaseResponseTypeDTO> {
+    const user = await this.userModel.findById(id);
+    if (!user) throw new NotFoundException('Hot user not found');
+    await user.deleteOne();
+    return {
+      success: true,
+      code: HttpStatus.OK,
+      message: 'user Deleted',
+    };
+  }
+
 }
