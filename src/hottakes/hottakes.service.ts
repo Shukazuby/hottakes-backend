@@ -85,7 +85,7 @@ export class HottakesService {
       data,
       success: true,
       code: HttpStatus.CREATED,
-      message: 'HotTake Created',
+      message: 'Hot Take Sent',
     };
   }
 
@@ -106,7 +106,7 @@ export class HottakesService {
       data,
       success: true,
       code: HttpStatus.CREATED,
-      message: 'HotTake Created',
+      message: 'Hot Take Posted',
     };
   }
 

@@ -8,6 +8,7 @@ import * as dotenv from 'dotenv';
 import { TokenModule } from './token/token.module';
 import { NotificationModule } from './notification/notification.module';
 import { CronWorkModule } from './utils/Cron/cron.module';
+import { ReportModule } from './report/report.module';
 dotenv.config();
 
 @Module({
@@ -18,6 +19,7 @@ dotenv.config();
     TokenModule,
     NotificationModule,
     CronWorkModule,
+    ReportModule,
   ],
 
   controllers: [AppController],
