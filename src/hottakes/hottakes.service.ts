@@ -25,44 +25,52 @@ export class HottakesService {
 
   async createHottakes(dto: CreateHottakeDto): Promise<BaseResponseTypeDTO> {
     const recipientUsername = dto.to.toLowerCase();
-    let sender = dto.sender?.toLowerCase();
+    let senderUsername = dto.sender?.toLowerCase();
 
-    const recipient = await this.userModel.findOne({
+    let recipient = await this.userModel.findOne({
       username: recipientUsername,
     });
     if (!recipient) {
-      throw new NotFoundException(`Recipient user not found.`);
+      recipient = await this.userModel.findOne({
+        hashedUsername: recipientUsername,
+      });
+      if (!recipient) {
+        throw new NotFoundException(`Recipient user not found.`);
+      }
     }
 
-    const senderr = await this.userModel.findOne({
-      username: sender,
-    });
-    if (!senderr) {
-      sender = 'anonymous';
-    }
+    const senderUser = senderUsername
+      ? await this.userModel.findOne({ username: senderUsername })
+      : null;
 
+    senderUsername = senderUser?.username ?? 'anonymous';
+
+    // Create and save the hot take
     const hottake = new this.hotTakeModel({
       ...dto,
-      recipientUsername: recipient.username,
-      sender,
+      recipientUsername: recipient.username ?? recipient.hashedUsername,
+      sender: senderUsername,
     });
     await hottake.save();
 
+    // Notification payload
     const payload = {
-      recipientUsername: recipient.username,
+      recipientUsername: recipient.username ?? recipient.hashedUsername,
       content: {
-        sender: senderr.username ?? 'anonymous',
+        sender: senderUsername,
         takeContent: hottake.content,
         hottakeId: hottake._id,
         notificationType: 'post',
       },
       contentType: 'post',
       token: recipient.token,
-      username: senderr?.username ?? 'anonymous',
+      username: senderUsername,
     };
+
     await this.notiSrv.createNotifiction(payload);
-    let content = '';
-    const receivedHotTake = [
+
+    // Random hot take message
+    const receivedHotTakeMessages = [
       '🔥 A new hot take just dropped into your feed.',
       '📨 Incoming! You’ve received a hot take.',
       '🧭 Time to weigh in... a take just dropped.',
@@ -75,19 +83,87 @@ export class HottakesService {
       '📬 Hot take delivery! Ready to agree or disagree?',
     ];
 
-    content =
-      receivedHotTake[Math.floor(Math.random() * receivedHotTake.length)];
+    const content =
+      receivedHotTakeMessages[
+        Math.floor(Math.random() * receivedHotTakeMessages.length)
+      ];
 
+    // Send push notification
     await sendPushNotification(content, payload.token, 'For You');
-    const data = await hottake.save();
 
     return {
-      data,
+      data: hottake,
       success: true,
       code: HttpStatus.CREATED,
       message: 'Hot Take Sent',
     };
   }
+
+  // async createHottakes(dto: CreateHottakeDto): Promise<BaseResponseTypeDTO> {
+  //   const recipientUsername = dto.to.toLowerCase();
+  //   let sender = dto.sender?.toLowerCase();
+
+  //   const recipient = await this.userModel.findOne({
+  //     username: recipientUsername,
+  //   });
+  //   if (!recipient) {
+  //     throw new NotFoundException(`Recipient user not found.`);
+  //   }
+
+  //   const senderr = await this.userModel.findOne({
+  //     username: sender,
+  //   });
+  //   if (!senderr) {
+  //     sender = 'anonymous';
+  //   }
+
+  //   const hottake = new this.hotTakeModel({
+  //     ...dto,
+  //     recipientUsername: recipient.username,
+  //     sender,
+  //   });
+  //   await hottake.save();
+
+  //   const payload = {
+  //     recipientUsername: recipient.username,
+  //     content: {
+  //       sender: senderr.username ?? 'anonymous',
+  //       takeContent: hottake.content,
+  //       hottakeId: hottake._id,
+  //       notificationType: 'post',
+  //     },
+  //     contentType: 'post',
+  //     token: recipient.token,
+  //     username: senderr?.username ?? 'anonymous',
+  //   };
+  //   await this.notiSrv.createNotifiction(payload);
+  //   let content = '';
+  //   const receivedHotTake = [
+  //     '🔥 A new hot take just dropped into your feed.',
+  //     '📨 Incoming! You’ve received a hot take.',
+  //     '🧭 Time to weigh in... a take just dropped.',
+  //     '🚀 Fresh perspective alert... new take received.',
+  //     '👀 A wild take appears in your mentions.',
+  //     '💥 Boom! A hot take just landed your way.',
+  //     "🗣️ You've been hit with a hot take... time to respond.",
+  //     '⚔️ A hot take is calling for your reaction.',
+  //     '📢 A hot take has entered the chat... thoughts?',
+  //     '📬 Hot take delivery! Ready to agree or disagree?',
+  //   ];
+
+  //   content =
+  //     receivedHotTake[Math.floor(Math.random() * receivedHotTake.length)];
+
+  //   await sendPushNotification(content, payload.token, 'For You');
+  //   const data = await hottake.save();
+
+  //   return {
+  //     data,
+  //     success: true,
+  //     code: HttpStatus.CREATED,
+  //     message: 'Hot Take Sent',
+  //   };
+  // }
 
   async postHottakes(dto: PostHottakeDto): Promise<BaseResponseTypeDTO> {
     const username = dto.sender.toLowerCase();

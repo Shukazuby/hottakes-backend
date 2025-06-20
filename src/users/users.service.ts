@@ -10,6 +10,7 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { sendPushNotification } from 'src/utils/utils.function';
 import { NotificationService } from 'src/notification/notification.service';
+import * as crypto from 'crypto';
 @Injectable()
 export class UsersService {
   constructor(
@@ -80,7 +81,8 @@ export class UsersService {
     existingUser.username = username;
     await existingUser.save();
     const profileLink = await this.generateProfileUrl(username);
-    existingUser.user_link = profileLink;
+    existingUser.user_link = profileLink.profileUrl;
+    existingUser.hashedUsername = profileLink.hashedUsername;
     await existingUser.save();
     const socials = await this.getShareUrls(username);
     existingUser.whatsappShare = socials.whatsappShareUrl;
@@ -129,9 +131,25 @@ export class UsersService {
     }
   }
 
-  generateProfileUrl(username: string): string {
+  // generateProfileUrl(username: string): string {
+  //   const baseUrl = process.env.APP_BASE_URL;
+  //   return `${baseUrl}/profile/${encodeURIComponent(username.toLowerCase())}`;
+  // }
+
+    generateProfileUrl(username: string) {
     const baseUrl = process.env.APP_BASE_URL;
-    return `${baseUrl}/profile/${encodeURIComponent(username.toLowerCase())}`;
+    const fullHash = crypto
+      .createHash('md5')
+      .update(username.toLowerCase())
+      .digest('hex'); 
+
+    const lettersOnly = fullHash.replace(/[0-9]/g, '');
+    const hash = lettersOnly.slice(0, 8).padEnd(8, 'x');
+
+    return {
+      profileUrl: `${baseUrl}/profile/${hash}`,
+      hashedUsername: hash,
+    };
   }
 
   async getShareUrls(name: string) {
@@ -166,7 +184,8 @@ export class UsersService {
       await this.findByUsername(newU);
       user.username = newU;
       const profileLink = await this.generateProfileUrl(newU);
-      user.user_link = profileLink;
+      user.user_link = profileLink.profileUrl;
+      user.hashedUsername = profileLink.hashedUsername;
       await user.save();
       const socials = await this.getShareUrls(newU);
       user.whatsappShare = socials.whatsappShareUrl;
@@ -226,7 +245,7 @@ export class UsersService {
     }
   }
 
-    async deleteUser(id: string): Promise<BaseResponseTypeDTO> {
+  async deleteUser(id: string): Promise<BaseResponseTypeDTO> {
     const user = await this.userModel.findById(id);
     if (!user) throw new NotFoundException('Hot user not found');
     await user.deleteOne();

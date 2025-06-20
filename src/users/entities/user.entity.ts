@@ -7,6 +7,9 @@ export class User {
 username: string
 
 @Prop()
+hashedUsername: string
+
+@Prop()
 @IsEmail()
 email?: string
 
