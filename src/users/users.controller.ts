@@ -107,4 +107,19 @@ export class UsersController {
     const result = await this.usersService.deleteUser(id);
     return result;
   }
+
+  @Get(':id/:blockedId')
+  @ApiOperation({ summary: ' Block a user by user Id' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'User Blocked' })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid input data',
+  })
+  async blockUser(
+    @Param('id') id: string,
+    @Param('blockedId') blockedId: string
+  ) {
+    const result = await this.usersService.blockUser(id, blockedId);
+    return result;
+  }
 }

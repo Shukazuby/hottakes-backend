@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import {
   CreateUserDto,
   LoginDto,
@@ -247,7 +247,7 @@ export class UsersService {
 
   async deleteUser(id: string): Promise<BaseResponseTypeDTO> {
     const user = await this.userModel.findById(id);
-    if (!user) throw new NotFoundException('Hot user not found');
+    if (!user) throw new NotFoundException('Hot Take user not found');
     await user.deleteOne();
     return {
       success: true,
@@ -255,5 +255,30 @@ export class UsersService {
       message: 'user Deleted',
     };
   }
+
+async blockUser(blockerId: string, blockedId: string): Promise<BaseResponseTypeDTO> {
+  const blocker = await this.userModel.findById(blockerId);
+  if (!blocker) throw new NotFoundException('Requesting user not found');
+
+  const userToBlock = await this.userModel.findById(blockedId);
+  if (!userToBlock) throw new NotFoundException('User to block not found');
+
+  const isAlreadyBlocked = blocker.blockedUsers.some(
+    (id) => id.toString() === userToBlock._id.toString()
+  );
+
+  if (isAlreadyBlocked) {
+    throw new BadRequestException('User already blocked');
+  }
+
+  blocker.blockedUsers.push(userToBlock._id.toString());
+  await blocker.save();
+
+  return {
+    success: true,
+    code: HttpStatus.OK,
+    message: 'User blocked successfully',
+  };
+}
 
 }

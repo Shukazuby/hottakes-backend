@@ -31,6 +31,9 @@ whatsappShare: string
 @Prop()
 twitterShare: string
 
+@Prop({ref: 'User'})
+blockedUsers: string[]
+
 @Prop({default: false})
 isWelcomeNotified: boolean
 

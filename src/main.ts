@@ -26,6 +26,7 @@ async function bootstrap() {
   app.enableCors();
 
   console.log(`Server running on port ${port}`)
+  console.log(`http://localhost:${port}/docs`)
 }
 
 bootstrap();
