@@ -99,34 +99,34 @@ export class HottakesService {
   //   };
   // }
 
-  async createHottakes(dto: CreateHottakeDto): Promise<BaseResponseTypeDTO> {
+async createHottakes(dto: CreateHottakeDto): Promise<BaseResponseTypeDTO> {
   const recipientUsername = dto.to.toLowerCase();
   let senderUsername = dto.sender?.toLowerCase();
 
-  let recipient = await this.userModel.findOne({
-    username: recipientUsername,
-  });
-
+  // Find recipient by username or hashedUsername
+  let recipient = await this.userModel.findOne({ username: recipientUsername });
   if (!recipient) {
-    recipient = await this.userModel.findOne({
-      hashedUsername: recipientUsername,
-    });
+    recipient = await this.userModel.findOne({ hashedUsername: recipientUsername });
     if (!recipient) {
       throw new NotFoundException(`Recipient user not found.`);
     }
   }
 
+  // Get sender user if provided
   const senderUser = senderUsername
     ? await this.userModel.findOne({ username: senderUsername })
     : null;
 
+  // Default senderUsername if not found
   senderUsername = senderUser?.username ?? 'anonymous';
 
-  // ✅ Check if recipient has blocked the sender
-  const senderId = senderUser?._id?.toString();
-  const recipientBlockedUsers = recipient.blockedUsers?.map((id) => id.toString()) ?? [];
+  // ✅ Check if recipient has blocked the sender (by username)
+  const recipientBlockedUsers = recipient.blockedUsers ?? [];
 
-  if (senderId && recipientBlockedUsers.includes(senderId)) {
+  if (
+    senderUsername !== 'anonymous' &&
+    recipientBlockedUsers.includes(senderUsername)
+  ) {
     // Sender is blocked by recipient — silently return success
     return {
       success: true,

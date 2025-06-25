@@ -108,18 +108,18 @@ export class UsersController {
     return result;
   }
 
-  @Get(':id/:blockedId')
-  @ApiOperation({ summary: ' Block a user by user Id' })
+  @Get(':blocker/:blocked')
+  @ApiOperation({ summary: ' Block a user' })
   @ApiResponse({ status: HttpStatus.OK, description: 'User Blocked' })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description: 'Invalid input data',
   })
   async blockUser(
-    @Param('id') id: string,
-    @Param('blockedId') blockedId: string
+    @Param('blocker') blocker: string,
+    @Param('blocked') blocked: string
   ) {
-    const result = await this.usersService.blockUser(id, blockedId);
+    const result = await this.usersService.blockUser(blocker, blocked);
     return result;
   }
 }
