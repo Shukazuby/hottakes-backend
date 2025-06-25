@@ -256,32 +256,6 @@ export class UsersService {
     };
   }
 
-// async blockUser(blockerId: string, blockedId: string): Promise<BaseResponseTypeDTO> {
-//   const blocker = await this.userModel.findById(blockerId);
-//   if (!blocker) throw new NotFoundException('Requesting user not found');
-
-//   const userToBlock = await this.userModel.findById(blockedId);
-//   if (!userToBlock) throw new NotFoundException('User to block not found');
-
-//   const isAlreadyBlocked = blocker.blockedUsers.some(
-//     (id) => id.toString() === userToBlock._id.toString()
-//   );
-
-//   if (isAlreadyBlocked) {
-//     throw new BadRequestException('User already blocked');
-//   }
-
-//   blocker.blockedUsers.push(userToBlock._id.toString());
-//   await blocker.save();
-
-//   return {
-//     success: true,
-//     code: HttpStatus.OK,
-//     message: 'User blocked successfully',
-//   };
-// }
-
-
 async blockUser(blockerUsername: string, blockedUsername: string): Promise<BaseResponseTypeDTO> {
   const blocker = await this.userModel.findOne({ username: blockerUsername.toLowerCase() });
   if (!blocker) throw new NotFoundException('Requesting user not found');
