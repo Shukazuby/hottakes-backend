@@ -1,14 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-export enum Category {
-  ENTERTAINMENT = 'Entertainment',
-  FOOD = 'Food',
-  GAMING = 'Gaming',
-  SOCIETY = 'Society',
-  SPORT = 'Sport',
-  POLITICS = 'politics',
-}
+// export enum Category {
+//   ENTERTAINMENT = 'Entertainment',
+//   FOOD = 'Food',
+//   GAMING = 'Gaming',
+//   SOCIETY = 'Society',
+//   SPORT = 'Sport',
+//   POLITICS = 'politics',
+// }
 
 export enum REACTIONS {
   SPICY = 'spicy',
@@ -36,7 +36,7 @@ export class HotTake {
   content: string;
 
   @Prop()
-  category?: Category;
+  category?: string;
 
   @Prop({ default: 0 })
   hot: number;

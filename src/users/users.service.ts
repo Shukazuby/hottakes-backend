@@ -279,5 +279,14 @@ async blockUser(blockerUsername: string, blockedUsername: string): Promise<BaseR
   };
 }
 
+ async deleteUsersBeforeDate(): Promise<{ deletedCount: number }> {
+    const cutoffDate = new Date('2025-06-16T00:00:00.000Z');
+
+    const result = await this.userModel.deleteMany({
+      createdAt: { $lt: cutoffDate },
+    });
+
+    return { deletedCount: result.deletedCount };
+  }
 
 }

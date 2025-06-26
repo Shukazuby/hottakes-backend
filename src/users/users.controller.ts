@@ -74,7 +74,7 @@ export class UsersController {
     description: 'Users fetched ',
   })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid input' })
-  async getAllTakes(): Promise<BaseResponseTypeDTO> {
+  async findAllUsers(): Promise<BaseResponseTypeDTO> {
     const result = await this.usersService.findAllUsers();
     return result;
   }
@@ -122,4 +122,17 @@ export class UsersController {
     const result = await this.usersService.blockUser(blocker, blocked);
     return result;
   }
+
+  // @Delete()
+  // @ApiOperation({ summary: 'deleteUsersBeforeDate' })
+  // @ApiResponse({
+  //   status: HttpStatus.OK,
+  //   description: 'Users Deleted ',
+  // })
+  // @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid input' })
+  // async deleteUsersBeforeDate(): Promise<any> {
+  //   const result = await this.usersService.deleteUsersBeforeDate();
+  //   return result;
+  // }
+
 }
